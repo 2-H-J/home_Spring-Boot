@@ -2,7 +2,8 @@ package com.kh.dto;
 
 import org.apache.ibatis.type.Alias;
 
-@Alias("member") // BoardMemberDTO를 member로 별칭지정
+//BoardMemberDTO를 member로 별칭지정
+@Alias("member")
 public class BoardMemberDTO {
 	private String id;
 	private String password;

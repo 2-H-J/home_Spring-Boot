@@ -9,6 +9,7 @@
 <body>
 	<ul>
 		<li><a href="/members">전체 회원 정보 조회</a></li>
+		<li><a href="/member/register/view">회원정보 등록 페이지</a></li>
 	</ul>
 </body>
 </html>
