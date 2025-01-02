@@ -27,6 +27,8 @@ public class MainController {
 		return view;
 	}
 	
+
+	
 //	멤버 리스트 페이지--------------------------------------------------------------------------
 	@GetMapping("/members")
 	public ModelAndView allMembers(ModelAndView view) {
