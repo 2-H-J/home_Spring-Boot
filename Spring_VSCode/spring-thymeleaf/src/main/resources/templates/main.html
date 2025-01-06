@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 컨테이너 부분 CSS -->
+    <style>
+        .container {
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            padding: 20px;
+            width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th,td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <th:block th:include="/fragments/header.html"></th:block>
+    <!-- 전체 회원 목록을 출력 -->
+     <div class="container">
+         <h2>회원 목록</h2>
+         <table>
+             <thead>
+             <tr>
+                 <th>회원번호</th>
+                 <th>회원이름</th>
+                 <th>회원닉네임</th>
+                 <th>등급</th>
+                 <th>삭제/수정</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr th:each="member : ${list}">
+                 <td th:text="${member.id}"></td>
+                 <td th:text="${member.userName}"></td>
+                 <td th:text="${member.nickName}"></td>
+                 <td th:switch="${member.grade}">
+                 	<th:block th:case="0">Bronze</th:block>
+                 	<th:block th:case="1">Silver</th:block>
+                 	<th:block th:case="2">Gold</th:block>
+                 	<th:block th:case="3">VIP</th:block>
+                 	<th:block th:case="4">VVIP</th:block>
+                 	<th:block th:case="5">admin</th:block>
+                 	<th:block th:case="*">Unknown</th:block>
+                 </td>
+                 <td>
+                 	<a th:href="@{/member/delete/{id}(id=${member.id})}">삭제</a>
+                 	 / 
+                 	<a th:href="@{/member/{id}(id=${member.id})}">수정</a>
+                 </td>
+             <!-- 
+				@{호출할 URL경로(파라미터, 경로변수)}
+
+				@{/member/{id}(id=${member.id)}
+				-> /member/A0001
+				
+				@{/file/download(fno=${file.no}, bno=${board.bno})
+				-> /file/download?fno=3&bno=1000
+				
+				@{/file/{member}/download(fno=${file.no}, bno=${board.bno},member=${board.writer})
+				-> /file/admin/download?fno=3&bno=1000             
+				
+              -->
+             </tr>
+           <!--   <th:block th:each="member : ${list}">
+                 <tr>
+                     <td th:text="${member.id}"></td>
+                     <td th:text="${member.userName}"></td>
+                     <td th:text="${member.nickName}"></td>
+                 </tr>
+             </th:block> -->
+
+             </tbody>
+         </table>
+     </div>
+</body>
+</html>

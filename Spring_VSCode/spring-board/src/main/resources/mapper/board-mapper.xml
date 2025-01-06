@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.mapper.BoardMapper">
+	<resultMap type="com.kh.dto.BoardDTO" id="board">
+		<id column="bno" property="bno"/>
+		<result column="title" property="title"/>
+		<result column="write_date" property="writeDate"/>
+		<result column="write_update_date" property="writeUpdateDate"/>
+		<result column="bcount" property="bcount"/>
+		<result column="blike" property="blike"/>
+		<result column="bhate" property="bhate"/>
+		<result column="content" property="content"/>
+	</resultMap>
+
+	<select id="getBoardList" parameterType="map" resultMap="board">
+		SELECT * FROM 
+		(SELECT 
+			CEIL(ROW_NUMBER() OVER(ORDER BY BNO DESC) / #{pageContentEa}) AS PAGE,
+			BV.*
+		 FROM BOARD_VIEW BV)
+		WHERE PAGE = #{pageNo}
+	</select>
+	<select id="selectBoardTotalCount" resultType="int">
+		select count(*) from board_view
+	</select>
+	<select id="selectBoardNo" resultType="int">
+		select seq_board_bno.nextval from dual
+	</select>
+	<insert id="insertBoard" parameterType="com.kh.dto.BoardDTO">
+		insert into board(bno, title, content, id)
+		values(#{bno}, #{title},#{content,jdbcType=CLOB},#{id})
+	</insert>
+	<insert id="insertBoardFile" parameterType="com.kh.dto.BoardFileDTO">
+		insert into board_file(fno,bno,fpath)
+		values(SEQ_BOARD_FILE_FNO.nextval, #{bno}, #{fpath})
+	</insert>
+	<update id="updateBoard">
+		update board set title=#{title}, content=#{content}
+		where bno = #{bno}
+	</update>
+ 	<select id="selectBoard" resultMap="board">
+ 		select * from board_view where bno = #{bno}
+ 	</select>
+ 	<select id="getBoardFileList" parameterType="int" resultType="com.kh.dto.BoardFileDTO">
+ 		select * from board_file where bno = #{bno}
+ 	</select>
+ 	<select id="selectFilePath" parameterType="int" resultType="string">
+ 		select fpath from board_file where fno = #{fno}
+ 	</select>
+ 	
+ 	<update id="updateBoardCount">
+ 		update board set bcount = bcount + 1 where bno = #{bno} 
+ 	</update>
+ 	<insert id="insertBoardComment" parameterType="com.kh.dto.BoardCommentDTO">
+ 		insert into board_comment(cno, bno, content, id)
+ 		values(SEQ_BOARD_COMMENT_CNO.nextval, #{bno}, #{content}, #{id})
+ 	</insert>
+ 	<select id="getCommentList" resultType="com.kh.dto.BoardCommentDTO">
+ 		SELECT * FROM BOARD_COMMENT_VIEW WHERE BNO = #{bno}
+ 	</select>
+ 	<delete id="deleteBoard">
+ 		delete from board where bno = #{bno}
+ 	</delete>
+ 	<delete id="deleteBoardComment">
+ 		delete from board_comment where cno = #{cno}
+ 	</delete>
+ 	<insert id="insertBoardLike" parameterType="map">
+ 		insert into board_content_like(bno,id)
+ 		values(#{bno},#{id})
+ 	</insert>
+ 	<delete id="deleteBoardLike" parameterType="map">
+ 		delete from board_content_like 
+ 		where bno = #{bno} and id = #{id}
+ 	</delete>
+ 	<insert id="insertBoardHate" parameterType="map">
+ 		insert into board_content_hate(bno,id)
+ 		values(#{bno},#{id})
+ 	</insert>
+ 	<delete id="deleteBoardHate" parameterType="map">
+ 		delete from board_content_hate 
+ 		where bno = #{bno} and id = #{id}
+ 	</delete>
+ 	<select id="getBoardLike" parameterType="int" resultType="int">
+ 		select count(*) from board_content_like where bno = #{bno}
+ 	</select>
+ 	<select id="getBoardHate" parameterType="int" resultType="int">
+ 		select count(*) from board_content_hate where bno = #{bno}
+ 	</select>
+ 	
+ 	<insert id="insertBoardCommentLike">
+ 		insert into board_comment_like(id,cno)
+ 		values(#{id},#{cno})
+ 	</insert>
+ 	<delete id="deleteBoardCommentLike">
+ 		delete from board_comment_like
+ 		where id like #{id} and cno = #{cno}
+ 	</delete>
+ 	<insert id="insertBoardCommentHate">
+ 		insert into board_comment_hate(id,cno)
+ 		values(#{id},#{cno})
+ 	</insert>
+ 	<delete id="deleteBoardCommentHate">
+ 		delete from board_comment_hate
+ 		where id like #{id} and cno = #{cno}
+ 	</delete>
+ 	
+</mapper>

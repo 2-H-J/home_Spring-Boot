@@ -1,0 +1,30 @@
+<style>
+    nav ul {
+        display: flex;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        justify-content: space-around;
+        background-color: #5b5757;
+    }
+    nav ul li {
+        display: inline;
+        color: white;
+    }
+    nav ul li a {
+        display: inline-block;
+        color: white;
+        text-align: center;
+        padding: 14px 20px;
+        text-decoration: none;
+    }
+    </style>
+    <nav>
+        <ul>
+            <li><a href="/home">홈</a></li>
+            <li th:if="${session.user == null}">
+                <a href="/">로그인</a>
+            </li>
+            <li th:if="${session.user == null}"><a href="/">회원가입</a></li>
+        </ul>
+    </nav>

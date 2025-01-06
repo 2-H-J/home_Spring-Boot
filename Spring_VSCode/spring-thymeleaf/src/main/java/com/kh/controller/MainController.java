@@ -24,6 +24,7 @@ public class MainController {
 		this.service = service;
 	}
 	
+
 	@GetMapping("/")
 	public ModelAndView index(ModelAndView view) {
 		view.setViewName("index");
@@ -69,7 +70,7 @@ public class MainController {
 	}
 
 	@PostMapping("/member/register")
-	public String memberRegister(BoardMemberDTO member) {
+	public String memberRegister(@RequestBody BoardMemberDTO member) {
 		System.out.println(member);
 		service.insertMember(member);
 		return "redirect:/members"; 

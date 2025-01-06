@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index(Board_List)</title>
+    <link th:href="@{/css/index_boardList.css}" rel="stylesheet" />
+</head>
+<body>
+    <!-- header.html -->
+    <th:block th:include="/fragments/header.html"></th:block>
+
+    <hr/>
+
+    <!-- 게시판(Board) -->
+    <div class="container">
+        <h1>게시판</h1>
+
+        <!-- thead(게시판 내용) -->
+        <table class="board-table">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                    <th>좋아요</th>
+                    <th>싫어요</th>
+                </tr>
+            </thead>
+
+            <!-- tbody(게시판 목록) -->
+            <tbody>
+                    <tr th:each="boardList : ${boardList}">
+                        <td>[[${boardList.bno}]]</td>
+                        <td><a th:href="@{/board/{bno}(bno=${boardList.bno})}">[[${boardList.title}]]</a></td>
+                        <td>[[${boardList.id}]]</td>
+                        <td>[[${boardList.writeDate}]]</td>
+                        <td>[[${boardList.bcount}]]</td>
+                        <td>[[${boardList.blike}]]</td>
+                        <td>[[${boardList.bhate}]]</td>
+                    </tr>
+            </tbody>
+            <!-- 페이징 -->
+            <tfoot>
+                <tr>
+                    <td colspan="7">
+                        <div class="pagination">
+                        <!-- 이전 페이지 그룹 이동 -->
+
+                        <!-- 페이지 번호 출력 -->
+                        <a th:href="@{/main(pageNo=${i}, pageContentEa=${paggingVO.pageOfContentCount})}" 
+                            th:each="i : ${#numbers.sequence(paggingVO.startPageOfPageGroup, paggingVO.endPageOfPageGroup)}">
+                            [[${i}]]
+                        </a>
+
+                        <!-- 다음 페이지 그룹 이동 -->
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>
