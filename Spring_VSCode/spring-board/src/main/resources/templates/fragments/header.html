@@ -21,10 +21,31 @@
     </style>
     <nav>
         <ul>
-            <li><a href="/home">홈</a></li>
+            <!-- 기본 메뉴 -->
+            <li><a href="/main">홈</a></li>
             <li th:if="${session.user == null}">
-                <a href="/">로그인</a>
+                <a href="/login/view">로그인</a>
             </li>
-            <li th:if="${session.user == null}"><a href="/">회원가입</a></li>
+            <li th:if="${session.user == null}">
+                <a href="/">회원가입</a>
+            </li>
+
+            <!-- 회원 관리 메뉴 추가 /admin/member 회원등급이 관리자(5) 일때만
+                 session.user != null를 '먼저' 확인 후 session.user.grade == 5를 비교해야 한다.
+            -->
+            <li th:if="${session.user != null && session.user.grade == 5}">
+                <a href="/member/main">회원관리</a>
+            </li>
+
+            <!-- 로그인을 한 상태면 로그아웃, 회원명 ~님 -->
+            <li th:if="${session.user != null}">
+                <a>닉네임 - [[${session.user.nickName}]] 님</a> <!-- th:text="${session.user.id} + '님'" -->
+            </li>
+            <li th:if="${session.user != null}">
+                <a href="/logout">로그아웃</a>
+            </li>
+
+
+
         </ul>
     </nav>

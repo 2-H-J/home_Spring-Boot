@@ -38,11 +38,16 @@ public class BoardMemberService {
 		return mapper.updateMember(member);
 	}
 
-	public BoardMemberDTO login(String id, String passwd) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("id", id);
-		map.put("passwd", passwd);
-		return mapper.login(map);
+	public BoardMemberDTO login(String id, String password) {
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("id", id);
+			map.put("password", password);
+			return mapper.findMemberByIdAndPassword(map);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	

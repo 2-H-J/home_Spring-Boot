@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원관리 페이지</title>
+    <link th:href="@{/css/admin_member_main.css}" rel="stylesheet" />
+    <script>
+        window.onload = () => {
+          document.querySelectorAll('.btn_delete').forEach((item) => {
+              item.onclick = (e) => {
+              //아이디 선택
+                const id = e.target.parentNode.parentNode.querySelector('.id').value;
+                fetch('/member/delete',{
+                  method : "DELETE",
+                  headers : {
+                    "Content-Type" : "application/json"
+                  },
+                  body : JSON.stringify({id})
+                }).then(response => response.json()).then(result => {
+                  console.log(result);
+                  let tag = '';
+                  result.list.forEach((item) => {
+                    tag += `
+                        <tr>
+                            <td><input type="text" class="id" readonly value="${item.id}"></td>
+                            <td><input type="text" class="userName" value="${item.userName}"></td>
+                            <td><input type="text" class="nickName" value="${item.nickName}"></td>
+                            <td>
+                                <select name="grade">
+                                <option value="0" ${item.grade == 0 ? 'selected' : ''}>Bronze</option>
+                                <option value="1" ${item.grade == 1 ? 'selected' : ''}>Silver</option>
+                                <option value="2" ${item.grade == 2 ? 'selected' : ''}>Gold</option>
+                                <option value="3" ${item.grade == 3 ? 'selected' : ''}>VIP</option>
+                                <option value="4" ${item.grade == 4 ? 'selected' : ''}>VVIP</option>
+                                <option value="5" ${item.grade == 5 ? 'selected' : ''}>Admin</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn_update">수정</button>
+                                <button class="btn_delete">삭제</button>
+                            </td>
+                        </tr>
+                    `;
+                  });
+                  document.querySelector('tbody').innerHTML = tag;
+                })
+              }
+          });
+        }
+    
+      </script>
+</head>
+<body>
+    <th:block th:include="/fragments/header.html"></th:block>
+    <div class="container">
+        <h1>회원관리 페이지</h1>
+        <hr>
+        <table>
+            <thead>
+                <tr>
+                    <th>회원 아이디</th>
+                    <th>회원 이름</th>
+                    <th>회원 닉네임</th>
+                    <th>회원 등급</th>
+                    <th>수정 / 삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="memberList : ${memberList}">
+                    <td><input type="text" class="id" th:value="${memberList.id}" readonly></td>
+                    <td><input type="text" class="userName" th:value="${memberList.userName}"></td>
+                    <td><input type="text" class="nickName" th:value="${memberList.nickName}"></td>
+                    <td>
+                        <select name="grade">
+                            <option value="0" th:selected="${memberList.grade == 0}">Bronze</option>
+                            <option value="1" th:selected="${memberList.grade == 1}">Silver</option>
+                            <option value="2" th:selected="${memberList.grade == 2}">Gold</option>
+                            <option value="3" th:selected="${memberList.grade == 3}">VIP</option>
+                            <option value="4" th:selected="${memberList.grade == 4}">VVIP</option>
+                            <option value="5" th:selected="${memberList.grade == 5}">admin</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn_update">수정</button>
+                        <button class="btn_delete">삭제</button>
+                    </td>
+                </tr>
+            </tbody>  
+        </table>
+    </div>
+</body>
+
+</html>

@@ -24,4 +24,6 @@ public interface BoardMemberMapper {
 
 	BoardMemberDTO login(Map<String, Object> map);
 
+	BoardMemberDTO findMemberByIdAndPassword(Map<String, String> map);
+
 }

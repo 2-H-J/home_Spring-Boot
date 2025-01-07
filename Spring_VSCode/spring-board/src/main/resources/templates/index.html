@@ -47,15 +47,17 @@
                 <tr>
                     <td colspan="7">
                         <div class="pagination">
-                        <!-- 이전 페이지 그룹 이동 -->
+                            <!-- 이전 페이지 그룹 이동 -->
+                            <a th:if="${paggingVO.priviousPageGroup}" th:href="@{/main(pageNo=${paggingVO.startPageOfPageGroup - 1}, pageContentEa=${paggingVO.pageOfContentCount})}">◀</a>
 
-                        <!-- 페이지 번호 출력 -->
-                        <a th:href="@{/main(pageNo=${i}, pageContentEa=${paggingVO.pageOfContentCount})}" 
-                            th:each="i : ${#numbers.sequence(paggingVO.startPageOfPageGroup, paggingVO.endPageOfPageGroup)}">
-                            [[${i}]]
-                        </a>
+                            <!-- 페이지 번호 출력 -->
+                            <a th:href="@{/main(pageNo=${i}, pageContentEa=${paggingVO.pageOfContentCount})}" 
+                                th:each="i : ${#numbers.sequence(paggingVO.startPageOfPageGroup, paggingVO.endPageOfPageGroup)}">
+                                [[${i}]]
+                            </a>
 
-                        <!-- 다음 페이지 그룹 이동 -->
+                            <!-- 다음 페이지 그룹 이동 -->
+                            <a th:if="${paggingVO.nextPageGroup}" th:href="@{/main(pageNo=${paggingVO.endPageOfPageGroup + 1}, pageContentEa=${paggingVO.pageOfContentCount})}">▶</a>
                         </div>
                     </td>
                 </tr>

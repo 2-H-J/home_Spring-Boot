@@ -23,4 +23,6 @@
   	select * from board_member
   	where id like #{id} and password like STANDARD_HASH(#{password},'SHA512')
   </select>
+
+  
 </mapper>
