@@ -40,59 +40,48 @@ public class BoardService {
 	}
 
 	public BoardDTO selectBoard(int bno) {
-
 			return mapper.selectBoard(bno);
 	}
 
 	public int updateBoardCount(int bno) {
-
 			return mapper.updateBoardCount(bno);
 	}
 
 	public int insertBoardComment(BoardCommentDTO dto) {
-
 			return mapper.insertBoardComment(dto);
 	}
 
 	public List<BoardCommentDTO> getCommentList(int bno) {
-
 			return mapper.getCommentList(bno);
 	}
 
 	public int deleteBoard(int bno) {
-
 			return mapper.deleteBoard(bno);
 	}
 
 	public int deleteBoardComment(int cno) {
-
 			return mapper.deleteBoardComment(cno);
 	}
 
 	public int updateBoard(BoardDTO dto) {
-
 			return mapper.updateBoard(dto);
 	}
 
 	public List<BoardFileDTO> getBoardFileList(int bno) {
-
 			return mapper.getBoardFileList(bno);
 	}
 
 	public String selectFilePath(int fno) {
-
 			return mapper.selectFilePath(fno);
 	}
 
 	public int insertBoardLike(int bno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("bno", bno);
 			map.put("id", id);
 			return mapper.insertBoardLike(map);
 	}
 	public int deleteBoardLike(int bno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("bno", bno);
 			map.put("id", id);
@@ -100,23 +89,19 @@ public class BoardService {
 	}
 
 	public int getBoardLike(int bno) {
-
 			return mapper.getBoardLike(bno);
 	}
 	public int getBoardHate(int bno) {
-
 			return mapper.getBoardHate(bno);
 	}
 
 	public int insertBoardHate(int bno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("bno", bno);
 			map.put("id", id);
 			return mapper.insertBoardHate(map);
 	}
 	public int deleteBoardHate(int bno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("bno", bno);
 			map.put("id", id);
@@ -124,14 +109,12 @@ public class BoardService {
 	}
 
 	public int insertBoardCommentLike(int cno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("cno", cno);
 			map.put("id", id);
 			return mapper.insertBoardCommentLike(map);
 	}
 	public int deleteBoardCommentLike(int cno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("cno", cno);
 			map.put("id", id);
@@ -139,14 +122,12 @@ public class BoardService {
 		
 	}
 	public int insertBoardCommentHate(int cno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("cno", cno);
 			map.put("id", id);
 			return mapper.insertBoardCommentHate(map);
 	}
 	public int deleteBoardCommentHate(int cno, String id) {
-
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("cno", cno);
 			map.put("id", id);
@@ -155,10 +136,12 @@ public class BoardService {
 	}
 
 	public int selectBoardTotalCount() {
-
 			return mapper.selectBoardTotalCount();
 	}
 
+	
+	
+	
 }
 
 

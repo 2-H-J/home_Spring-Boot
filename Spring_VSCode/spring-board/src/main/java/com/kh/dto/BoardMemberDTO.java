@@ -1,68 +1,68 @@
 package com.kh.dto;
-
-import org.apache.ibatis.type.Alias;
-
-@Alias("member")
 public class BoardMemberDTO {
-    private String id;
-    private String password;
-    private String userName;
-    private String nickName;
-    private int grade;
-    
-    public BoardMemberDTO(String id, String password, String userName, String nickName, int grade) {
-        this.id = id;
-        this.password = password;
-        this.userName = userName;
-        this.nickName = nickName;
-        this.grade = grade;
-    }
+	private String id;
+	private String password;
+	private String userName;
+	private String nickName;
+	private int grade;
 
-    public String getId() {
-        return id;
-    }
+	public BoardMemberDTO() {	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public BoardMemberDTO(String id, String password, String userName, String nickName, int grade) {
+    this.id = id;
+    this.password = password;
+    this.userName = userName;
+    this.nickName = nickName;
+    this.grade = grade;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+	public int getGrade() {
+		return grade;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
 
-    public String getUserName() {
-        return userName;
-    }
+  public String getId() {
+		return id;
+	}
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getNickName() {
-        return nickName;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public int getGrade() {
-        return grade;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public void setGrade(int grade) {
-        this.grade = grade;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    @Override
-    public String toString() {
-        return "BoardMemberDTO [id=" + id + ", password=" + password + ", userName=" + userName + ", nickName="
-                + nickName + ", grade=" + grade + "]";
-    }
+	public String getNickName() {
+		return nickName;
+	}
 
-    
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	@Override
+	public String toString() {
+		return "BoardMemberDTO [id=" + id + ", password=" + password + ", userName=" + userName + ", nickName="
+				+ nickName + "]";
+	}
+	
+	
+	
+	
 }

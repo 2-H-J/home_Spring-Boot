@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.mapper.QuestMapper">
+	<!-- ResultMap -->
+	<resultMap type="car" id="car">
+		<id column="car_id" property="carId" />
+		<result column="car_name" property="carName" />
+		<result column="car_maker" property="carMaker" />
+		<result column="car_make_year" property="carMakeYear" />
+		<result column="car_price" property="carPrice" />
+	</resultMap>
+	
+	<select id="selectAllCar" resultMap="car">
+		select * from car order by car_id desc
+	</select>
+	
+	<select id="searchCar" resultMap="car">
+		select * from car where car_name like '%' || #{carName} || '%'
+	</select>
+
+	<delete id="deleteCar" parameterType="string">
+		delete from car where car_id = #{carId}
+	</delete>
+	
+	
+</mapper>
+
+
+

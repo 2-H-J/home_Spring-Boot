@@ -9,19 +9,14 @@ import com.kh.dto.BoardMemberDTO;
 
 @Mapper
 public interface BoardMemberMapper {
-	// Mapper에서 id 속성 값과 추상메서드 명으로 실행할 SQL문 찾아서 실행
+	//Mapper에서 id 속성 값과 추상메서드 명으로 실행할 SQL문 찾아서 실행
 	List<BoardMemberDTO> selectAllMember();
-
 	int insertMember(BoardMemberDTO dto);
-
 	List<BoardMemberDTO> selectNameMember(String name);
-
 	int deleteMember(String id);
-
-	BoardMemberDTO selectMember(String id);
-
-	int updateMember(BoardMemberDTO member);
-
-	BoardMemberDTO login(Map<String, Object> map);
+	int selectIdMember(String id);
+	BoardMemberDTO findMemberByIdAndPassword(Map<String, String> map);
+  int updateMember(Map<String, String> map);
+  int updateColumnMember(Map<String, String> map);
 
 }

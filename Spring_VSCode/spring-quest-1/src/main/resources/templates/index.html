@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarList</title>
+  <link rel="stylesheet" href="/css/index.css">
+  <script>
+    window.onload = function (carId) {
+      document.querySelector("button").addEventListener("click", function () {
+        var carName = document.querySelector("#carName").value;
+
+        fetch("/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ carName }) // 요청 본문(body)에 삭제할 carName를 JSON 형식으로 변환하여 전달
+        })
+          .then(response => response.json())
+          .then(data => {
+            document.querySelector("#result").innerHTML = "";
+            var tag = ''; // 갱신될 HTML 태그를 저장할 변수 초기화
+            data.forEach(car => { // 서버에서 받은 회원 리스트를 순회
+              tag += `<tr>
+                        <td>${car.carId}</td>
+                        <td>${car.carName}</td>
+                        <td>${car.carMaker}</td>
+                        <td>${car.carMakeYear}</td>
+                        <td>${car.carPrice}</td>
+                        <td><a href="/delete?carId=${car.carId}">삭제</a></td>
+                      </tr>`;
+            });
+            document.querySelector("#result").innerHTML = tag;
+          });
+      });
+    }
+
+  </script>
+
+</head>
+
+<body>
+  <h2>자동차 정보 조회 페이지</h2>
+  <div class="container">
+    <div class="search_box">
+
+      <input type="text" id="carName" placeholder="자동차 이름 입력" />
+      <button>검색</button>
+    </div>
+    <hr>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>자동차번호</th>
+            <th>자동차명</th>
+            <th>제작사</th>
+            <th>제작년도</th>
+            <th>가격</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <!-- thymeleaf 적용하여 list를 출력 안되어 있음 -->
+        <tbody id="result">
+          <tr th:each="car : ${list}">
+            <td th:text="${car.carId}"></td>
+            <td th:text="${car.carName}"></td>
+            <td th:text="${car.carMaker}"></td>
+            <td th:text="${car.carMakeYear}"></td>
+            <td th:text="${car.carPrice}"></td>
+            <td><a th:href="@{/delete(carId=${car.carId})}">삭제</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

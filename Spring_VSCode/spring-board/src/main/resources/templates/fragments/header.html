@@ -1,30 +1,38 @@
 <style>
-    nav ul {
-        display: flex;
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-        justify-content: space-around;
-        background-color: #5b5757;
-    }
-    nav ul li {
-        display: inline;
-        color: white;
-    }
-    nav ul li a {
-        display: inline-block;
-        color: white;
-        text-align: center;
-        padding: 14px 20px;
-        text-decoration: none;
-    }
-    </style>
-    <nav>
-        <ul>
-            <li><a href="/home">홈</a></li>
-            <li th:if="${session.user == null}">
-                <a href="/">로그인</a>
-            </li>
-            <li th:if="${session.user == null}"><a href="/">회원가입</a></li>
-        </ul>
-    </nav>
+  nav {
+    width: 1200px;
+    margin: 0 auto;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px;
+    background-color: #ccc;
+  }
+  nav ul li {
+    margin: 0 10px;
+    font-size: 1.3em;
+  }
+  nav ul li a {
+    color: #333;
+    text-decoration: none;
+  }
+  nav ul li a:hover {
+    color: #666;
+  }
+</style>
+<nav>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li th:if="${session.user == null}"><a href="/">회원가입</a></li>
+    <li th:if="${session.user == null}"><a href="/login/view">로그인</a></li>
+    <!-- 회원 관리 메뉴 추가 /admin/member 관리자일때만-->
+    <li th:if="${session.user != null && session.user.grade == 5}"><a href="/member/main">회원관리</a></li>
+    <!-- 로그인을 한 상태면 로그아웃, 회원명 님 로그인 -->
+    <li th:if="${session.user != null}"><a href="/">[[${session.user.userName}]]</a>님 로그인</li>
+    <li th:if="${session.user != null}"><a href="/logout">로그아웃</a></li>
+
+  </ul>
+
+</nav>

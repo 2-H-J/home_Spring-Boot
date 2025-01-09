@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> <!-- 문서의 문자 인코딩을 UTF-8로 설정 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 환경에서 적절한 초기 화면 크기를 설정 -->
+  <title>MemberList</title> <!-- 브라우저 탭에 표시될 제목 -->
+
+  <!-- JavaScript 코드 시작 -->
+  <script>
+    // 특정 회원 삭제 요청을 서버로 보내는 함수
+    function deleteMember(id) {
+      // fetch API를 사용하여 '/member/delete' URL로 DELETE 요청을 전송
+      fetch('/member/delete', {
+        method: "DELETE", // HTTP 메서드 DELETE: 리소스를 삭제하는 데 사용
+        headers: {
+          "Content-Type": "application/json" // 요청 본문 데이터 타입을 JSON으로 명시
+        },
+        body: JSON.stringify({ id }) // 요청 본문(body)에 삭제할 회원 ID를 JSON 형식으로 변환하여 전달
+      })
+      .then(response => response.json()) // 서버에서 받은 응답을 JSON 형태로 파싱
+      .then(result => {
+        console.log(result); // 서버 응답 결과를 콘솔에 출력
+        alert(result.msg); // 서버가 반환한 메시지를 사용자에게 알림
+        updateTable(result.list); // 업데이트된 회원 리스트로 테이블 갱신
+      });
+    }
+
+    // 특정 회원 정보를 수정하는 함수
+    function updateMember(item) {
+      fetch('/member/update', {
+        method: 'PUT', // HTTP 메서드 PUT: 리소스를 수정하거나 새로 생성할 때 사용
+        headers: {
+          "Content-Type": "application/json" // 요청 본문 데이터 타입을 JSON으로 명시
+        },
+        body: JSON.stringify(item) // 수정할 회원 정보를 JSON 형식으로 변환하여 서버로 전달
+      })
+      .then(response => response.json()) // 서버 응답을 JSON으로 파싱
+      .then(result => {
+        alert(result.msg); // 서버에서 반환한 메시지를 알림으로 표시
+        updateTable(result.list); // 업데이트된 회원 리스트로 테이블 갱신
+      });
+    }
+
+    // 테이블을 갱신하는 함수
+    function updateTable(list) {
+      let tag = ''; // 갱신될 HTML 태그를 저장할 변수 초기화
+      list.forEach((item) => { // 서버에서 받은 회원 리스트를 순회
+        tag += `<tr>
+                  <td><input type="text" class="id" readonly value="${item.id}"></td>
+                  <td><input type="text" class="userName" value="${item.userName}"></td>
+                  <td><input type="text" class="nickName" value="${item.nickName}"></td>
+                  <td>
+                    <select name="grade" class="grade">
+                      <!-- 각 회원의 등급을 설정하고, 현재 등급에 'selected' 추가 -->
+                      <option value="0" ${item.grade == 0 ? 'selected' : ''}>Bronze</option>
+                      <option value="1" ${item.grade == 1 ? 'selected' : ''}>Silver</option>
+                      <option value="2" ${item.grade == 2 ? 'selected' : ''}>Gold</option>
+                      <option value="3" ${item.grade == 3 ? 'selected' : ''}>VIP</option>
+                      <option value="4" ${item.grade == 4 ? 'selected' : ''}>VVIP</option>
+                      <option value="5" ${item.grade == 5 ? 'selected' : ''}>Admin</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button class="btn_update">수정</button> <!-- 수정 버튼 -->
+                    <button class="btn_delete">삭제</button> <!-- 삭제 버튼 -->
+                  </td>
+                </tr>`;
+      });
+      document.querySelector('tbody').innerHTML = tag; // HTML 테이블의 <tbody>를 갱신된 태그로 교체
+    }
+
+    // 특정 컬럼 데이터만 수정하는 함수
+    function updateColumnMember(item) {
+      fetch('/member/updateColumn', {
+        method: 'PATCH', // HTTP 메서드 PATCH: 리소스의 일부를 수정하는 데 사용
+        headers: {
+          "Content-Type": "application/json" // 요청 본문 데이터 타입을 JSON으로 명시
+        },
+        body: JSON.stringify(item) // 수정할 데이터를 JSON 형식으로 변환하여 서버로 전달
+      })
+      .then(response => response.json()) // 서버 응답을 JSON으로 파싱
+      .then(result => {
+        console.log(result.msg); // 서버 응답 메시지를 콘솔에 출력
+        // updateTable(result.list); // 테이블 갱신: 필요 시 주석 해제
+      });
+    }
+
+    // 페이지 로드 시 실행되는 함수
+    window.onload = () => {
+      // 테이블의 <tbody>에서 클릭 이벤트를 감지
+      document.querySelector('tbody').onclick = (e) => {
+        if (e.target.className == 'btn_delete') { // 삭제 버튼 클릭 시
+          const id = e.target.parentNode.parentNode.querySelector('.id').value; // 해당 회원 ID 가져오기
+          deleteMember(id); // 삭제 요청 실행
+        } else if (e.target.className == 'btn_update') { // 수정 버튼 클릭 시
+          let obj = {}; // 수정 데이터를 저장할 객체
+          e.target.parentNode.parentNode.querySelectorAll('input, select').forEach(item => {
+            obj = { ...obj, [item.className]: item.value }; // 각 입력 필드의 className을 키로, 값을 저장
+          });
+          updateMember(obj); // 수정 요청 실행
+        }
+      };
+
+      // 테이블의 모든 <input> 및 <select> 요소에서 변경 이벤트를 감지
+      document.querySelectorAll('tbody input, tbody select').forEach(item => {
+        item.onchange = (e) => {
+          const id = e.target.parentNode.parentNode.querySelector('.id').value; // 수정된 항목의 ID 가져오기
+          const obj = {
+            column: e.target.className, // 변경된 컬럼 이름
+            value: e.target.value, // 변경된 값
+            id: id // 수정 대상 ID
+          };
+          updateColumnMember(obj); // 컬럼 수정 요청 실행
+        };
+      });
+    };
+  </script>
+</head>
+<body>  
+  <th:block th:include="/fragments/header.html"></th:block> <!-- 공통 헤더 포함 -->
+  <hr>
+  <div class="container">
+    <h2>회원 관리 페이지</h2>
+    <hr>
+    <table>
+      <thead>
+        <tr>
+          <th>아이디</th>
+          <th>이름</th>
+          <th>닉네임</th>
+          <th>회원등급</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="member : ${list}">
+          <td><input type="text" class="id" readonly th:value="${member.id}"></td> <!-- 회원 ID -->
+          <td><input type="text" class="userName" th:value="${member.userName}"></td> <!-- 회원 이름 -->
+          <td><input type="text" class="nickName" th:value="${member.nickName}"></td> <!-- 회원 닉네임 -->
+          <td>
+            <select name="grade" class="grade"> <!-- 회원 등급 선택 -->
+              <option value="0" th:selected="${member.grade == 0}">Bronze</option>
+              <option value="1" th:selected="${member.grade == 1}">Silver</option>
+              <option value="2" th:selected="${member.grade == 2}">Gold</option>
+              <option value="3" th:selected="${member.grade == 3}">VIP</option>
+              <option value="4" th:selected="${member.grade == 4}">VVIP</option>
+              <option value="5" th:selected="${member.grade == 5}">Admin</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn_update">수정</button> <!-- 수정 버튼 -->
+            <button class="btn_delete">삭제</button> <!-- 삭제 버튼 -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

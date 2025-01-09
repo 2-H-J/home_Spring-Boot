@@ -12,8 +12,8 @@
 		<result column="blike" property="blike"/>
 		<result column="bhate" property="bhate"/>
 		<result column="content" property="content"/>
+		<result column="nickname" property="nickName"/>
 	</resultMap>
-
 	<select id="getBoardList" parameterType="map" resultMap="board">
 		SELECT * FROM 
 		(SELECT 
@@ -107,3 +107,9 @@
  	</delete>
  	
 </mapper>
+
+
+
+
+
+

@@ -1,5 +1,4 @@
 package com.kh.dto;
-
 import java.io.File;
 
 public class BoardFileDTO {

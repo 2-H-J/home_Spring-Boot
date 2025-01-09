@@ -1,8 +1,5 @@
 package com.kh.dto;
 
-import org.apache.ibatis.type.Alias;
-
-@Alias("board")
 public class BoardDTO {
 	private int bno;
 	private String id;
@@ -12,10 +9,8 @@ public class BoardDTO {
 	private String writeUpdateDate;
 	private int bcount;
 	private String content;
-	private String blike;
-	private String bhate;
-	
-	// 조회용 가져오는건 set, get만 만들어도 괜찮다.
+	private int blike;
+	private int bhate;
 	public int getBno() {
 		return bno;
 	}
@@ -64,24 +59,24 @@ public class BoardDTO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getBlike() {
+	public int getBlike() {
 		return blike;
 	}
-	public void setBlike(String blike) {
+	public void setBlike(int blike) {
 		this.blike = blike;
 	}
-	public String getBhate() {
+	public int getBhate() {
 		return bhate;
 	}
-	public void setBhate(String bhate) {
+	public void setBhate(int bhate) {
 		this.bhate = bhate;
 	}
-//	@Override
-//	public String toString() {
-//		return "BoardDTO [bno=" + bno + ", id=" + id + ", nickName=" + nickName + ", title=" + title + ", writeDate="
-//				+ writeDate + ", writeUpdateDate=" + writeUpdateDate + ", bcount=" + bcount + ", content=" + content
-//				+ ", blike=" + blike + ", bhate=" + bhate + "]";
-//	}
+	@Override
+	public String toString() {
+		return "BoardDTO [bno=" + bno + ", id=" + id + ", nickName=" + nickName + ", title=" + title + ", writeDate="
+				+ writeDate + ", writeUpdateDate=" + writeUpdateDate + ", bcount=" + bcount + ", content=" + content
+				+ ", blike=" + blike + ", bhate=" + bhate + "]";
+	}
 	
 	
 	
