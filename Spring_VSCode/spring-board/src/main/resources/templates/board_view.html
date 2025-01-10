@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
-
+!
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
 	<link rel="stylesheet" href="/css/board_view.css">
 	<script>
 		window.onload = () => {
-			
+
 			//좋아요 링크 클릭 -> 경고창 띄우기
+			// 게시물 좋아요 --------------------------------------------------------------------------------
 			document.querySelector('#btn_like').onclick = () => {
 				//alert('좋아요 클릭')
 				fetch('/board/like/[[${board.bno}]]')
@@ -26,6 +27,8 @@
 						console.log(error);
 					})
 			}
+
+			// 게시물 싫어요 --------------------------------------------------------------------------------
 			document.querySelector('#btn_hate').onclick = () => {
 				fetch('/board/hate/[[${board.bno}]]')
 					.then(response => response.json())
@@ -41,57 +44,87 @@
 						console.log(error);
 					})
 			}
-			//댓글 좋아요
-			document.querySelectorAll('.btn_comment_like, .btn_comment_hate').forEach((item) => {
-				item.onclick = () => {
-					//alert(item.parentNode.parentNode.querySelector('input').value);
-					//console.log(item.parentNode.parentNode.querySelector('input'));
-					//클릭한것이 좋아요? 싫어요? 
-					console.log(item.className);
-					let cno = item.parentNode.parentNode.querySelector('input').value;
-					let count = 0;
-					if (item.className == "btn_comment_like")
-						//좋아요를 눌렀을 때
-						count = commentLikeHateAjax(true, cno);
-					else
-						//싫어요를 눌렀을 때
-						count = commentLikeHateAjax(false, cno);
-					//페이지 새로고침
-					location.reload();
-				}
-			});
-			
-			// 댓글 갯수 더보기
-			let commentCount = 1;
+
+			// 댓글 갯수 더보기----------------------------------------------------------------------------------------------------
+			let commentCount = 6;
 			document.querySelector('#btn_more').onclick = () => {
-				commentCount += 5;
-				fetch('/board/comment/[[${board.bno}]]', {
-					method : 'GET',
-					params : {
-						start : commentCount
-					}
-				}).then(res => res.json())
-				.then(result => {
-					console.log(result);
-				}).catch(error => {
-					console.log(error);
-				})
+
+				fetch(`/board/comment/[[${board.bno}]]?start=${commentCount}`,).then(res => res.json())
+					.then(result => {
+						console.log(result);
+						let tag = '';
+						result.forEach(item => {
+							tag += `<div class="comment">
+							<p>
+								<input type="hidden" name="cno" value="${item.con}">
+								<span>작성자 : ${item.id} / </span>
+								<span>작성일 : ${item.cdate} / </span>
+								<span><a href="#" class="btn_comment_like">좋아요 : ${item.clike}</a></span>
+								<span><a href="#" class="btn_comment_hate">싫어요 : ${item.chate}</a></span>
+								</p>
+								<p>${item.content}</p>
+								</div>`;
+						});
+						document.querySelector('.comment_container').innerHTML += tag; // += 기존에 있는거에 더해서
+						commentCount += result.length;
+
+						window.scrollTo({
+							top: document.body.scrollHeight,
+							behavior: 'smooth' // 스크롤 애니메이션 추가
+						});
+					}).catch(error => {
+						console.log(error);
+					})
 			}
-			
+
+			// 댓글 좋아요 ------------------------------------------------------------------------------------
+			document.querySelector('.comment_container').onclick = (e) => {
+				if(e.target.className != 'btn_comment_like' && e.target.className != 'btn_comment_hate')
+				return;
+
+				console.log(e.target);
+				console.log(e.target.parentNode.parentNode.querySelector('input[name="cno"]').value);
+
+				let cno = e.target.parentNode.parentNode.querySelector('input[name="cno"]').value;
+				commentLikeHateAjax(e.target.className == 'btn_comment_like', cno, e.target);
+				// item.onclick = () => {
+				// 	//alert(item.parentNode.parentNode.querySelector('input').value);
+				// 	//console.log(item.parentNode.parentNode.querySelector('input'));
+				// 	//클릭한것이 좋아요? 싫어요? 
+				// 	console.log(item.className);
+				// 	let cno = item.parentNode.parentNode.querySelector('input').value;
+				// 	let count = 0;
+				// 	if (item.className == "btn_comment_like")
+				// 		//좋아요를 눌렀을 때
+				// 		count = commentLikeHateAjax(true, cno);
+				// 	else
+				// 		//싫어요를 눌렀을 때
+				// 		count = commentLikeHateAjax(false, cno);
+				// 	//페이지 새로고침
+				// 	location.reload();
+				// }
+			};
+
 		}
-		function commentLikeHateAjax(mode, cno) {
-			let url = `./comment\${mode ? "Like" : "Hate"}.do?cno=\${cno}`;
+		function commentLikeHateAjax(mode, cno, target) {
+			let url = `/board/comment/${mode ? "like" : "hate"}/${cno}`;
 			console.log(url);
 			//ajax 호출
 			fetch(url).then(response => response.json())
 				.then(result => {
 					console.log(result);
+					if(result.code == 2){
+						alert(result.msg);
+						location.href='/login/view';
+					} 
+					target.querySelector('span').innerHTML = result.count;
+					
 				}).catch(error => {
 					console.log(error);
 				});
-			}
-			
-			</script>
+		}
+	</script>
+
 </head>
 
 <body>
@@ -182,19 +215,19 @@
 		<div class="comment_container">
 			<div class="comment" th:each="comment : ${commentList }">
 				<p>
-					<input type="hidden" name="cno" th:value="${comment.cno }"/>
+					<input type="hidden" name="cno" th:value="${comment.cno }" />
 					<span>작성자 : [[${comment.id }]] / </span>
 					<span>작성일 : [[${comment.cdate }]] / </span>
 					<span><a href="#" class="btn_comment_like">좋아요 : <span>[[${comment.clike }]]</span></a></span>
 					<span><a href="#" class="btn_comment_hate">싫어요 : <span>[[${comment.chate}]]</span></a></span>
 				</p>
 				<p>[[${comment.content }]]</p>
-				<a th:if="${session.user != null && session.user.id == comment.id }"
-					href="@{/comment/delete/{cno}(cno=${comment.cno })}">댓글 삭제</a>
+				<a th:if="${session.user != null && session.user.id == comment.id }" href="@{/comment/delete/{cno}(cno=${comment.cno })}">댓글 삭제</a>
 			</div>
 		</div>
 		<hr>
 		<button type="button" id="btn_more">댓글 더보기</button>
+		<button type="button" id="btn_page_up">제일 위로 가기</button>
 	</div>
 </body>
 

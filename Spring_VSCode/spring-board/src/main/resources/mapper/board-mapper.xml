@@ -121,6 +121,14 @@
  		delete from board_comment_hate
  		where id like #{id} and cno = #{cno}
  	</delete>
+
+	<select id="selectCommentLikeCount" resultType="int">
+		select count(*) from board_comment_like where cno = #{cno}
+	</select>
+
+	<select id="selectCommentHateCount" resultType="int">
+		select count(*) from board_comment_hate where cno = #{cno}
+	</select>
  	
 </mapper>
 

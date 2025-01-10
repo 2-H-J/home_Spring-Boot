@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RequestMapping("/board") // 컨트롤러의 기본 경로를 "/board"로 설정합니다.
 @Controller // Spring MVC에서 이 클래스를 컨트롤러로 사용하겠다는 선언입니다.
@@ -214,5 +216,83 @@ public class BoardController {
     // 댓글 작성과 관련된 게시글 번호(comment.getBno())를 사용하여 리다이렉트 경로 설정
     return "redirect:/board/" + comment.getBno();
   }
+
+  // 댓글 갯수 5개씩 증가 더보기 로직을 처리하는 메서드 -------------------------------------------------------------------
+  @ResponseBody
+  @GetMapping("/comment/{bno}") // HTTP GET 요청을 처리하며, URL 경로의 {bno}를 매핑하여 게시글 번호로 사용
+  public List<BoardCommentDTO> getMethodName(@PathVariable int bno, @RequestParam int start) {
+
+      // 1. 게시글 번호(bno)와 시작 인덱스(start)를 이용하여 댓글 리스트를 조회
+      // - @PathVariable: URL 경로에서 {bno} 값을 추출하여 매개변수 bno에 매핑
+      // - @RequestParam: 쿼리 파라미터(start)의 값을 추출하여 매개변수 start에 매핑
+      // - 예: /comment/123?start=6 -> bno = 123, start = 6
+
+      // 2. 서비스 계층을 호출하여 댓글 리스트를 가져옴
+      // - boardService.getCommentList(bno, start):
+      //   - bno: 특정 게시글의 댓글만 조회하기 위해 게시글 번호 전달
+      //   - start: 조회 시작 인덱스를 전달 (MyBatis 쿼리에서 RW 조건으로 사용)
+      //   - 댓글 5개씩 조회하기 위해 start와 start+4 범위를 쿼리에서 설정
+
+      List<BoardCommentDTO> commentList = boardService.getCommentList(bno, start);
+
+      // 3. 조회된 댓글 리스트를 클라이언트에 JSON 형식으로 반환
+      // - @ResponseBody: 반환값을 JSON 형식으로 직렬화하여 클라이언트에 전송
+      // - List<BoardCommentDTO>: 댓글 정보를 담은 DTO 객체 리스트를 JSON 형태로 응답
+      // - 클라이언트는 JSON 응답을 파싱하여 화면에 댓글을 추가로 표시
+
+      return commentList;
+  }
+
+  // 댓글 좋아요 로직을 처리하는 메서드 -------------------------------------------------------------------
+  @GetMapping("/comment/like/{cno}")
+  @ResponseBody
+  public Map<String, Object> boardCommentLike(@PathVariable int cno, HttpSession session) {
+      Map<String, Object> map = new HashMap<String, Object>();
+      
+      if(session.getAttribute("user") == null){
+          map.put("code", 2);
+          map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
+      }else{
+          String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
+          try {
+              boardService.insertBoardCommentLike(cno, id);
+              map.put("code", 1);
+              map.put("msg", "해당 댓글에 좋아요 하셨습니다.");
+          } catch (Exception e) {
+              boardService.deleteBoardCommentLike(cno, id);
+              map.put("code", 1);
+              map.put("msg", "해당 댓글에 좋아요를 취소 하셨습니다.");
+          }
+          map.put("count", boardService.selectCommentLikeCount(cno));
+      }
+      return map;
+    } 
+
+    // 댓글 싫어요 로직을 처리하는 메서드 -------------------------------------------------------------------
+  @GetMapping("/comment/hate/{cno}")
+  @ResponseBody
+  public Map<String, Object> boardCommentHate(@PathVariable int cno, HttpSession session) {
+      Map<String, Object> map = new HashMap<String, Object>();
+      
+      if(session.getAttribute("user") == null){
+          map.put("code", 2);
+          map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
+      }else{
+          String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
+          try {
+              boardService.insertBoardCommentHate(cno, id);
+              map.put("code", 1);
+              map.put("msg", "해당 댓글에 싫어요 하셨습니다.");
+          } catch (Exception e) {
+              boardService.deleteBoardCommentHate(cno, id);
+              map.put("code", 1);
+              map.put("msg", "해당 댓글에 싫어요를 취소 하셨습니다.");
+          }
+          map.put("count", boardService.selectCommentHateCount(cno));
+      }
+      return map;
+    }  
+  
+
 
 }

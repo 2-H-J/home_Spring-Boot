@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      h2 {
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        height: 40px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #4e53ac;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        cursor: pointer;
+        height: 40px;
+        box-sizing: border-box;
+      }
+      button:hover {
+        background-color: #1d25bd;
+      }
+      .search_box {
+        display: flex;
+        justify-content: center;
+        flex-flow: row nowrap;
+        gap: 0px 5px;
+      }
+      hr {
+        width: 80%;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #4e53ac;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      th {
+        background-color: #1d25bd;
+        color: white;
+      }
+    </style>
+    <script>
+      window.onload = function() {
+        document.querySelector("button").addEventListener("click", function() {
+          var title = document.querySelector("#title").value;
+          
+          fetch("/search", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            
+            body: JSON.stringify({ title: title})
+          })
+            .then(response => response.json())
+            .then(data => {
+              document.querySelector("#result").innerHTML = "";
+              var tag = '';
+              
+              /* 추가 */
+              data.forEach(book => {
+                tag += `<tr>
+                          <td>${book.isbn}</td>
+                          <td>${book.title}</td>
+                          <td>${book.author}</td>
+                          <td>${book.releaseDate}</td>
+                          <td>${book.publisher}</td>
+                          <td>${book.price}</td>
+                          <td><a href="/delete?isbn=${book.isbn}">삭제</a></td>
+                        </tr>`;
+              })
+
+              document.querySelector("#result").innerHTML = tag;
+            });
+        });
+      }
+
+    </script>
+  </head>
+  <body>
+    <h2>도서 정보 조회 페이지</h2>
+    <div class="container">
+      <div class="search_box">
+
+        <input type="text" id="title" placeholder="도서 이름 일부 입력" />
+        <button>검색</button>
+      </div>
+      <hr>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>도서번호</th>
+              <th>도서 이름</th>
+              <th>저자</th>
+              <th>출판일</th>
+              <th>출판사</th>
+              <th>도서 가격</th>
+              <th>삭제</th>
+            </tr>
+          </thead>
+          <tbody id="result">
+            <tr th:each="book : ${list}">
+              <td th:text="${book.isbn}"></td>
+              <td th:text="${book.title}"></td>
+              <td th:text="${book.author}"></td>
+              <td th:text="${book.pubdate}"></td>
+              <td th:text="${book.publisher}"></td>
+              <td th:text="${book.price}"></td>
+              <td><a th:href="@{/delete(isbn=${book.isbn})}" >삭제</a></td>
+            </tr>
+            
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

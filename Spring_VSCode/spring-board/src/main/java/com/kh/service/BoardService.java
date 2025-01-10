@@ -141,6 +141,15 @@ public class BoardService {
 	public int selectBoardTotalCount() {
 			return mapper.selectBoardTotalCount();
 	}
+
+	public int selectCommentLikeCount(int cno){
+
+		return cno;
+	}
+
+	public Object selectCommentHateCount(int cno) {
+		throw new UnsupportedOperationException("Unimplemented method 'selectCommentHateCount'");
+	}
 	
 	
 }

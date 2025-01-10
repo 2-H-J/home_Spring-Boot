@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.mapper.QuestMapper">
+	<!-- ResultMap -->
+	<resultMap type="book" id="book">
+		<id column="isbn" property="isbn"/>
+		<result column="book_name" property="title"/>
+		<result column="author" property="author"/>
+		<result column="publisher" property="publisher"/>
+		<result column="price" property="price"/>
+		<result column="publish_date" property="pubdate"/>		
+	</resultMap>
+	
+
+	<select id="selectAll" resultMap="book">
+		select * from books order by isbn
+	</select>
+
+
+	<delete id="delete" parameterType="string">
+		delete from books where isbn = #{isbn}
+	</delete>
+	
+<!-- sql문 -->
+	<select id="selectTitle" resultMap="book">
+		select * from books where book_name like '%' || #{title} || '%'
+	</select>
+
+
+	
+
+	
+</mapper>
+
+
+
