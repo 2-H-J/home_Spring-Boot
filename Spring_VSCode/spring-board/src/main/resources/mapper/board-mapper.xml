@@ -57,9 +57,25 @@
  		insert into board_comment(cno, bno, content, id)
  		values(SEQ_BOARD_COMMENT_CNO.nextval, #{bno}, #{content}, #{id})
  	</insert>
- 	<select id="getCommentList" resultType="com.kh.dto.BoardCommentDTO">
- 		SELECT * FROM BOARD_COMMENT_VIEW WHERE BNO = #{bno}
- 	</select>
+	<select id="getCommentList" resultType="com.kh.dto.BoardCommentDTO" parameterType="map">
+    <!--
+        댓글 리스트를 페이징 처리하여 반환하는 SQL 쿼리
+        - ROW_NUMBER(): 각 행에 고유한 순번을 부여 (cdate를 기준으로 내림차순 정렬)
+        - RW: ROW_NUMBER()로 생성된 순번을 나타내는 별칭
+        - #{bno}: 게시글 번호로 댓글 데이터를 필터링
+        - #{start}: 가져올 댓글의 시작 위치 (ROW_NUMBER() 기준)
+        - RW BETWEEN #{start} AND (#{start}+4): 시작 위치부터 5개의 댓글을 가져옴
+        - 페이징 처리:
+            1. 게시글 번호(BNO)에 해당하는 댓글만 조회
+            2. RW(순번)가 #{start}에서 #{start}+4 사이에 있는 행만 반환
+    -->
+		SELECT * FROM
+			(SELECT ROW_NUMBER() OVER(ORDER BY CDATE DESC) AS RW, BCV.*
+			FROM BOARD_COMMENT_VIEW BCV
+			WHERE BNO = #{bno})
+		WHERE RW BETWEEN #{start} AND (#{start}+4)
+	</select>
+
  	<delete id="deleteBoard">
  		delete from board where bno = #{bno}
  	</delete>

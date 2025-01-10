@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인 페이지</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
-    <div class="login-container">
+    <th:block th:include="/fragments/header.html"></th:block> <!-- 공통 헤더 포함 -->
+    <div class="container">
         <h2>로그인</h2>
         <form action="/login" method="post">
             <div class="form-group">
                 <label for="id">아이디</label>
-                <input type="text" id="id" name="id" required>
+                <input type="text" id="id" name="id" placeholder="아이디 입력" required>
             </div>
             <div class="form-group">
                 <label for="password">비밀번호</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
             </div>
             <button type="submit" class="login-button">로그인</button>
         </form>

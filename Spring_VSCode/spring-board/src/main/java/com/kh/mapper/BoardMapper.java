@@ -18,7 +18,7 @@ public interface BoardMapper {
 	BoardDTO selectBoard(int bno);
 	int updateBoardCount(int bno);
 	int insertBoardComment(BoardCommentDTO dto);
-	List<BoardCommentDTO> getCommentList(int bno);
+	List<BoardCommentDTO> getCommentList(Map<String, Object> map);
 	int deleteBoard(int bno);
 	int deleteBoardComment(int cno);
 	int updateBoard(BoardDTO dto);

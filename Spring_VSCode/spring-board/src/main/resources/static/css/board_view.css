@@ -1,0 +1,136 @@
+@charset "UTF-8";
+/* 기본 컨테이너 스타일 */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* 제목 스타일 */
+.container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #007BFF;
+}
+
+/* 테이블 스타일 */
+.board-view-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    table-layout: fixed;
+}
+.board-view-table img{
+	width: 100%;	
+}
+.board-view-table th, .board-view-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    vertical-align: top;
+}
+
+.board-view-table th {
+    width: 20%;
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: right;
+}
+
+.board-view-table td {
+    width: 80%;
+    background-color: #fff;
+}
+
+.board-view-table tr:nth-child(even) td {
+    background-color: #f9f9f9;
+}
+
+/* 버튼 스타일 */
+.actions {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.actions .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    background-color: #007BFF;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.actions .btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.actions .btn:active {
+    background-color: #003d80;
+    transform: translateY(0);
+}
+
+/* 기본 버튼 스타일 */
+.actions .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    border-radius: 4px;
+    margin: 0 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* 버튼 기본 색상 */
+.actions .btn:hover {
+    transform: translateY(-2px);
+}
+
+.actions .btn:active {
+    transform: translateY(0);
+}
+
+/* 목록 버튼 스타일 */
+.actions .btn {
+    background-color: #007BFF;
+}
+
+.actions .btn:hover {
+    background-color: #0056b3;
+}
+
+.actions .btn:active {
+    background-color: #003d80;
+}
+
+/* 수정 버튼 스타일 */
+.actions .edit-btn {
+    background-color: #28a745;
+}
+
+.actions .edit-btn:hover {
+    background-color: #218838;
+}
+
+.actions .edit-btn:active {
+    background-color: #1e7e34;
+}
+
+/* 삭제 버튼 스타일 */
+.actions .delete-btn {
+    background-color: #dc3545;
+}
+
+.actions .delete-btn:hover {
+    background-color: #c82333;
+}
+
+.actions .delete-btn:active {
+    background-color: #bd2130;
+}
+
