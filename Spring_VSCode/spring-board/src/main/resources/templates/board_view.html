@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 !
+
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
@@ -79,32 +80,14 @@
 
 			// 댓글 좋아요 ------------------------------------------------------------------------------------
 			document.querySelector('.comment_container').onclick = (e) => {
-				if(e.target.className != 'btn_comment_like' && e.target.className != 'btn_comment_hate')
-				return;
-
+				//댓글 좋아요 싫어요 눌렀을때만 반응하게끔 처리
+				if (e.target.className != 'btn_comment_like' && e.target.className != 'btn_comment_hate') return;
 				console.log(e.target);
 				console.log(e.target.parentNode.parentNode.querySelector('input[name="cno"]').value);
 
 				let cno = e.target.parentNode.parentNode.querySelector('input[name="cno"]').value;
 				commentLikeHateAjax(e.target.className == 'btn_comment_like', cno, e.target);
-				// item.onclick = () => {
-				// 	//alert(item.parentNode.parentNode.querySelector('input').value);
-				// 	//console.log(item.parentNode.parentNode.querySelector('input'));
-				// 	//클릭한것이 좋아요? 싫어요? 
-				// 	console.log(item.className);
-				// 	let cno = item.parentNode.parentNode.querySelector('input').value;
-				// 	let count = 0;
-				// 	if (item.className == "btn_comment_like")
-				// 		//좋아요를 눌렀을 때
-				// 		count = commentLikeHateAjax(true, cno);
-				// 	else
-				// 		//싫어요를 눌렀을 때
-				// 		count = commentLikeHateAjax(false, cno);
-				// 	//페이지 새로고침
-				// 	location.reload();
-				// }
-			};
-
+			}
 		}
 		function commentLikeHateAjax(mode, cno, target) {
 			let url = `/board/comment/${mode ? "like" : "hate"}/${cno}`;
@@ -113,12 +96,11 @@
 			fetch(url).then(response => response.json())
 				.then(result => {
 					console.log(result);
-					if(result.code == 2){
+					if (result.code == 2) {
 						alert(result.msg);
-						location.href='/login/view';
-					} 
+						location.href = '/login/view';
+					}
 					target.querySelector('span').innerHTML = result.count;
-					
 				}).catch(error => {
 					console.log(error);
 				});
@@ -222,7 +204,8 @@
 					<span><a href="#" class="btn_comment_hate">싫어요 : <span>[[${comment.chate}]]</span></a></span>
 				</p>
 				<p>[[${comment.content }]]</p>
-				<a th:if="${session.user != null && session.user.id == comment.id }" href="@{/comment/delete/{cno}(cno=${comment.cno })}">댓글 삭제</a>
+				<a th:if="${session.user != null && session.user.id == comment.id }"
+					href="@{/comment/delete/{cno}(cno=${comment.cno })}">댓글 삭제</a>
 			</div>
 		</div>
 		<hr>
