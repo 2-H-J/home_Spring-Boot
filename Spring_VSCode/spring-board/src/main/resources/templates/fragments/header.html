@@ -1,38 +1,16 @@
-<style>
-  nav {
-    width: 80%;
-    margin: 0 auto;
-  }
-  nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 0px;
-    background-color: #ccc;
-  }
-  nav ul li {
-    margin: 0 10px;
-    font-size: 1.3em;
-  }
-  nav ul li a {
-    color: #333;
-    text-decoration: none;
-  }
-  nav ul li a:hover {
-    color: #666;
-  }
-</style>
+<link rel="stylesheet" href="/css/header.css">
 <nav>
   <ul>
     <li><a href="/">Home</a></li>
     <li th:if="${session.user == null}"><a href="/">회원가입</a></li>
     <li th:if="${session.user == null}"><a href="/login/view">로그인</a></li>
-    <!-- 회원 관리 메뉴 추가 /admin/member 관리자일때만-->
-    <li th:if="${session.user != null && session.user.grade == 5}"><a href="/member/main">회원관리</a></li>
+    <!-- 관리자 메뉴에 클래스를 추가 -->
+    <li th:if="${session.user != null && session.user.grade == 5}">
+      <a href="/member/main" class="admin-menu">회원관리</a>
+    </li>
     <!-- 로그인을 한 상태면 로그아웃, 회원명 님 로그인 -->
     <li th:if="${session.user != null}"><a href="/">[[${session.user.userName}]]</a>님 로그인</li>
     <li th:if="${session.user != null}"><a href="/logout">로그아웃</a></li>
-
   </ul>
-
 </nav>
+

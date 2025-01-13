@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-!
 
 <head>
 	<meta charset="UTF-8">
@@ -8,10 +7,11 @@
 	<link rel="stylesheet" href="/css/board_view.css">
 	<script>
 		window.onload = () => {
-
-			//좋아요 링크 클릭 -> 경고창 띄우기
+			let commentCount = 6;
+			const userId = '[[${session.user != null ? session.user.id : ""}]]'; // 세션의 유저 아이디를 userId에 담아둔다 댓글삭제용
 			// 게시물 좋아요 --------------------------------------------------------------------------------
 			document.querySelector('#btn_like').onclick = () => {
+				//좋아요 링크 클릭 -> 경고창 띄우기
 				//alert('좋아요 클릭')
 				fetch('/board/like/[[${board.bno}]]')
 					.then(response => response.json())
@@ -46,48 +46,139 @@
 					})
 			}
 
-			// 댓글 갯수 더보기----------------------------------------------------------------------------------------------------
-			let commentCount = 6;
-			document.querySelector('#btn_more').onclick = () => {
+			// 댓글 갯수 더보기 ----------------------------------------------------------------------------------------------------
 
-				fetch(`/board/comment/[[${board.bno}]]?start=${commentCount}`,).then(res => res.json())
+			document.querySelector('#btn_more').onclick = () => {
+				fetch(`/board/comment/[[${board.bno}]]?start=${commentCount}`).then(res => res.json())
 					.then(result => {
 						console.log(result);
 						let tag = '';
 						result.forEach(item => {
 							tag += `<div class="comment">
-							<p>
-								<input type="hidden" name="cno" value="${item.con}">
-								<span>작성자 : ${item.id} / </span>
-								<span>작성일 : ${item.cdate} / </span>
-								<span><a href="#" class="btn_comment_like">좋아요 : ${item.clike}</a></span>
-								<span><a href="#" class="btn_comment_hate">싫어요 : ${item.chate}</a></span>
-								</p>
-								<p>${item.content}</p>
+									<p>
+										<input type="hidden" name="cno" value="${item.cno}">
+										<span>${item.id}</span>
+										<span>작성일 : ${item.cdate}</span>
+										<span><a href="#" class="btn_comment_like">좋아요 : <span>${item.clike}</span></a></span>
+										<span><a href="#" class="btn_comment_hate">싫어요 : <span>${item.chate}</span></a></span>
+										<span>
+											${userId == item.id ?
+									'<button type="button" class="btn_comment_delete">댓글 삭제</button>' +
+									'<button type="button" class="btn_comment_update">댓글 수정</button>' : ''} 
+										</span>
+									</p>
+									<p>${item.content}</p>
 								</div>`;
 						});
-						document.querySelector('.comment_container').innerHTML += tag; // += 기존에 있는거에 더해서
+						document.querySelector('.comment_container').innerHTML += tag;
 						commentCount += result.length;
-
-						window.scrollTo({
-							top: document.body.scrollHeight,
-							behavior: 'smooth' // 스크롤 애니메이션 추가
-						});
 					}).catch(error => {
 						console.log(error);
 					})
+				console.log(commentCount);
 			}
 
-			// 댓글 좋아요 ------------------------------------------------------------------------------------
+
+			// 댓글 삭제,수정 / 좋아요,싫어요 ------------------------------------------------------------------------------------
 			document.querySelector('.comment_container').onclick = (e) => {
+				e.preventDefault();
 				//댓글 좋아요 싫어요 눌렀을때만 반응하게끔 처리
-				if (e.target.className != 'btn_comment_like' && e.target.className != 'btn_comment_hate') return;
-				console.log(e.target);
-				console.log(e.target.parentNode.parentNode.querySelector('input[name="cno"]').value);
+				if (e.target.className == 'btn_comment_like' || e.target.className == 'btn_comment_hate') {
+					console.log(e.target);
+					console.log(e.target.parentNode.parentNode.querySelector('input[name="cno"]').value);
 
-				let cno = e.target.parentNode.parentNode.querySelector('input[name="cno"]').value;
-				commentLikeHateAjax(e.target.className == 'btn_comment_like', cno, e.target);
+					let cno = e.target.parentNode.parentNode.querySelector('input[name="cno"]').value;
+					commentLikeHateAjax(e.target.className == 'btn_comment_like', cno, e.target);
+				}
+
+				//댓글 삭제 버튼 눌렀을때
+				if (e.target.className == 'btn_comment_delete') {
+					console.log(e.target);
+					location.href = `/board/comment/delete/${e.target.parentNode.parentNode.querySelector('input[name="cno"]').value}`;
+				}
+				//댓글 수정 버튼 눌렀을때 -> 해당 댓글을 수정하는 폼으로 교체
+				if (e.target.className == 'btn_comment_update') {
+					console.log(e.target);
+
+					// 댓글 내용이 p 태그에 내용으로 존재
+
+					// 1. textarea를 생성 (태그를 객체로 생성), document.createElement('태그명');
+					const newElement = document.createElement('textarea'); // 새 태그
+
+					// 2. 기존 p태그에 있는 내용을 1번에서 생성한 textarea에 저장
+					const oldElement = e.target.parentNode.parentNode.nextElementSibling; // 기존 태그 / parentNode : 부모 태그
+					newElement.value = oldElement.innerHTML;
+
+					// 3. 기존 태그를 1번에서 새로만든 태그로 교체
+					// 		교체 : 부모 태그를 선택해서 replaceChild를 이용하면 해당 자식 태그를 교체 가능
+					oldElement.parentNode.replaceChild(newElement, oldElement);
+
+					// 4. 취소/수정 버튼을 생성해서 부모태그의 appendChild를 이용해서 자식 요소로 추가
+					const btnCancel = document.createElement('button');
+					btnCancel.type = 'button';
+					btnCancel.innerHTML = '취소';
+					const btnUpdate = document.createElement('button');
+					btnUpdate.type = 'button';
+					btnUpdate.innerHTML = '수정';
+					newElement.parentNode.appendChild(btnCancel);
+					newElement.parentNode.appendChild(btnUpdate);
+					// 5. 취소/수정 버튼의 이벤트 처리
+					// 취소
+					btnCancel.onclick = () => {
+						newElement.parentNode.replaceChild(oldElement, newElement);
+						btnCancel.remove();
+						btnUpdate.remove();
+					}
+					// 수정
+					btnUpdate.onclick = () => {
+						const cno = e.target.parentNode.parentNode.querySelector('input[name="cno"]').value;
+						const content = newElement.value;
+
+						fetch('/board/comment', {
+							method: 'PATCH',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ cno, content })
+						}).then(response => response.json())
+							.then(result => {
+								console.log(result);
+								//수정 완료 후 태그 교체
+								if (result.code == 1) {
+									oldElement.innerHTML = newElement.value;
+									newElement.parentNode.replaceChild(oldElement, newElement);
+									btnCancel.remove();
+									btnUpdate.remove();
+								} else {
+									alert(result.msg);
+									location.href = '/login/view';
+								}
+							}).catch(error => {
+								console.log(error);
+							})
+					}
+				}
 			}
+
+			const scrollTopButton = document.querySelector('#btn_scroll_top'); // 버튼 선택
+			// 스크롤 이벤트 핸들러
+			window.onscroll = () => {
+				// 페이지 스크롤 위치가 100px 이상이면 버튼 표시
+				if (window.scrollY > 100) {
+					scrollTopButton.style.display = 'block';
+				} else {
+					scrollTopButton.style.display = 'none';
+				}
+			};
+
+			// 버튼 클릭 시 상단으로 부드럽게 스크롤
+			scrollTopButton.onclick = () => {
+				window.scrollTo({
+					top: 0, // 화면 상단 위치
+					behavior: 'smooth' // 부드럽게 스크롤
+				});
+			};
+
 		}
 		function commentLikeHateAjax(mode, cno, target) {
 			let url = `/board/comment/${mode ? "like" : "hate"}/${cno}`;
@@ -105,67 +196,57 @@
 					console.log(error);
 				});
 		}
+
 	</script>
 
 </head>
 
 <body>
-	<th:block th:include="/fragments/header.html"></th:block> <!-- 공통 헤더 포함 -->
+	<th:block th:insert="~{/fragments/header.html}"></th:block> <!-- 공통 헤더 포함 -->
 	<div id="container" class="container">
-		<h2>글조회 페이지</h2>
+		<h2 style="text-align: center; color: #007BFF; font-weight: bold;">글조회 페이지</h2>
 		<table class="board-view-table">
 			<tr>
 				<th>글번호</th>
 				<td>[[${board.bno}]]</td>
 			</tr>
 			<tr>
-				<th>제목 : </th>
-				<td th:text="${board.title }"></td>
+				<th>제목</th>
+				<td th:text="${board.title}"></td>
 			</tr>
 			<tr>
-				<th>작성자 : </th>
-				<td>[[${board.nickName }]]</td>
+				<th>작성자</th>
+				<td>[[${board.nickName}]]</td>
 			</tr>
 			<tr>
-				<th>조회수 : </th>
-				<td>[[${board.bcount }]]</td>
+				<th>조회수</th>
+				<td>[[${board.bcount}]]</td>
 			</tr>
 			<tr>
-				<td colspan="2">
-					[(${board.content })]
-				</td>
-				<!-- <td colspan="2" th:utext="${board.content }"> 
-				
-			</td> -->
-			</tr>
-			<tr>
-				<td colspan="2">
-					<a href="#" id="btn_like">좋아요 : <span id="like_count">[[${board.blike }]]</span> </a>
-					<a href="#" id="btn_hate">싫어요 : <span id="hate_count">[[${board.bhate }]]</span> </a>
+				<td colspan="2" style="text-align: justify;">
+					[[${board.content}]]
 				</td>
 			</tr>
-			<!-- 
-			해당 글을 쓴 작성자에게만 수정, 삭제 버튼이 나오게끔 처리
-		 -->
-			<!-- <c:if test="${sessionScope.user.boardMemberId == board.boardMemberId }">
-		 <tr>
-			 <td colspan="2">
-			 	<button id="btn_update">수정</button>
-			 	<button id="btn_delete">삭제</button>
-			 	<script>
-			 		document.querySelector("#btn_update").onclick = () =>{
-			 			location.href='./boardUpdateView.do?bno=${board.boardNo}';
-			 		}
-			 		document.querySelector("#btn_delete").onclick = () =>{
-			 			location.href='./boardDelete.do?bno=${board.boardNo}';
-			 		}
-			 	</script>
-			 </td>
-	 	</tr>
-		 </c:if> -->
-
 			<tr>
-
+				<td colspan="2" style="text-align: center;">
+					<a href="#" id="btn_like">좋아요 : <span id="like_count">[[${board.blike}]]</span></a>
+					<a href="#" id="btn_hate">싫어요 : <span id="hate_count">[[${board.bhate}]]</span></a>
+				</td>
+			</tr>
+			<!-- 해당 게시글 작성자에게만 수정, 삭제 버튼 나오기 처리 -->
+			<tr th:if="${session.user != null && session.user.id == board.id}">
+				<td colspan="2">
+					<button id="btn_update">수정</button>
+					<button id="btn_delete">삭제</button>
+					<script>
+						document.querySelector("#btn_update").onclick = () => {
+							location.href = '/board/update/view?bno=[[${board.bno}]]';
+						}
+						document.querySelector("#btn_delete").onclick = () => {
+							location.href = '/board/delete/[[${board.bno}]]';
+						}
+					</script>
+				</td>
 			</tr>
 
 			<tr>
@@ -198,20 +279,25 @@
 			<div class="comment" th:each="comment : ${commentList }">
 				<p>
 					<input type="hidden" name="cno" th:value="${comment.cno }" />
-					<span>작성자 : [[${comment.id }]] / </span>
-					<span>작성일 : [[${comment.cdate }]] / </span>
-					<span><a href="#" class="btn_comment_like">좋아요 : <span>[[${comment.clike }]]</span></a></span>
-					<span><a href="#" class="btn_comment_hate">싫어요 : <span>[[${comment.chate}]]</span></a></span>
+					<span>작성자 : [[${comment.id }]]</span>
+					<span>작성일 : [[${comment.cdate }]]</span>
+					<span>
+						<a href="#" class="btn_comment_like">좋아요 : <span>[[${comment.clike }]]</span></a>
+						<a href="#" class="btn_comment_hate">싫어요 : <span>[[${comment.chate}]]</span></a>
+					</span>
+					<span th:if="${session.user != null && session.user.id == comment.id}">
+						<button type="button" class="btn_comment_delete">댓글 삭제</button>
+						<button type="button" class="btn_comment_update">댓글 수정</button>
+					</span>
 				</p>
 				<p>[[${comment.content }]]</p>
-				<a th:if="${session.user != null && session.user.id == comment.id }"
-					href="@{/comment/delete/{cno}(cno=${comment.cno })}">댓글 삭제</a>
 			</div>
 		</div>
-		<hr>
 		<button type="button" id="btn_more">댓글 더보기</button>
-		<button type="button" id="btn_page_up">제일 위로 가기</button>
 	</div>
+	<button id="btn_scroll_top">
+		▲
+	</button>
 </body>
 
 </html>

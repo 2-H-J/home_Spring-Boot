@@ -18,8 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -181,6 +183,45 @@ public class BoardController {
     return map;
   }
 
+// 게시물 삭제 로직을 처리하는 메서드 -----------------------------------------------------------------------------------
+// HTTP GET 요청으로 /board/delete/{bno} 경로가 호출되었을 때 실행되는 메서드입니다.
+// 게시글 삭제를 처리하며, 작성자 본인만 삭제할 수 있도록 권한을 확인합니다.
+  @GetMapping("/delete/{bno}")
+  public String boardDelete(@PathVariable int bno, HttpSession session, HttpServletResponse response) {
+
+      // 1. 사용자 로그인 상태와 작성자 본인 여부 확인
+      // 세션에서 "user" 속성을 확인하여 사용자가 로그인 상태인지 확인합니다.
+      // 또한, 세션에 저장된 사용자 ID와 삭제하려는 게시글의 작성자 ID를 비교하여 본인 여부를 확인합니다.
+      if (session.getAttribute("user") != null && 
+          ((BoardMemberDTO) session.getAttribute("user")).getId().equals(boardService.selectBoard(bno).getId())) {
+
+          // 1-1. 사용자가 로그인 상태이고 본인이 작성한 게시글인 경우
+          // 서비스 계층을 호출하여 게시글을 삭제합니다.
+          boardService.deleteBoard(bno);
+
+      } else {
+          // 1-2. 사용자가 로그인하지 않았거나 본인이 작성한 게시글이 아닌 경우
+
+          // 클라이언트에 HTML 응답을 보내기 위해 응답의 콘텐츠 타입을 설정합니다.
+          response.setContentType("text/html; charset=utf-8");
+
+          try {
+              // 자바스크립트를 사용하여 경고 메시지를 클라이언트에게 표시하고 이전 페이지로 이동시킵니다.
+              response.getWriter().println(
+                  "<script>alert('해당 글 작성자만 삭제가 가능합니다.'); history.back();</script>");
+              return null; // 메서드 실행을 종료하고, 클라이언트에게 별도의 뷰를 반환하지 않습니다.
+          } catch (Exception e) {
+              // 예외 발생 시 에러 메시지를 출력합니다.
+              e.printStackTrace();
+          }
+      }
+
+      // 2. 게시글 삭제 완료 후 리다이렉트 처리
+      // 사용자를 메인 페이지로 리다이렉트 시킵니다.
+      return "redirect:/main";
+  }
+
+
   // 게시물 댓글 추가 로직을 처리하는 메서드 -----------------------------------------------------------------------------------
   @PostMapping("/comment")
   // // 댓글 작성 요청을 처리하는 POST 매핑
@@ -268,30 +309,67 @@ public class BoardController {
       return map;
     } 
 
-    // 댓글 싫어요 로직을 처리하는 메서드 -------------------------------------------------------------------
+    // 댓글 싫어요 로직 처리하는 메서드 -------------------------------------------------------------------
   @GetMapping("/comment/hate/{cno}")
   @ResponseBody
   public Map<String, Object> boardCommentHate(@PathVariable int cno, HttpSession session) {
       Map<String, Object> map = new HashMap<String, Object>();
       
-      if(session.getAttribute("user") == null){
-          map.put("code", 2);
-          map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
-      }else{
-          String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
+    if(session.getAttribute("user") == null){
+        map.put("code", 2);
+        map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
+    }else{
+      String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
+        try {
+          boardService.insertBoardCommentHate(cno, id);
+          map.put("code", 1);
+          map.put("msg", "해당 댓글에 싫어요 하셨습니다.");
+        } catch (Exception e) {
+            boardService.deleteBoardCommentHate(cno, id);
+            map.put("code", 1);
+            map.put("msg", "해당 댓글에 싫어요를 취소 하셨습니다.");
+        }
+      map.put("count", boardService.selectCommentHateCount(cno));
+    }
+    return map;
+  } 
+
+    // 댓글 삭제 로직 처리 메서드 -------------------------------------------------------------------
+    @GetMapping("/comment/delete/{cno}")
+    public String commentDelete(@PathVariable int cno, HttpSession session, HttpServletResponse response) {
+        BoardCommentDTO comment = boardService.selectComment(cno);
+        if(session.getAttribute("user") != null && ((BoardMemberDTO)session.getAttribute("user")).getId().equals(comment.getId())) {
+            boardService.deleteBoardComment(cno);
+        }else{
+          response.setContentType("text/html; charset=utf-8");
           try {
-              boardService.insertBoardCommentHate(cno, id);
-              map.put("code", 1);
-              map.put("msg", "해당 댓글에 싫어요 하셨습니다.");
+            response.getWriter().println("<script>alert('해당 글 작성자만 삭제가 가능합니다..'); history.back();</script>");
+            return null;
           } catch (Exception e) {
-              boardService.deleteBoardCommentHate(cno, id);
-              map.put("code", 1);
-              map.put("msg", "해당 댓글에 싫어요를 취소 하셨습니다.");
+            e.printStackTrace();
           }
-          map.put("count", boardService.selectCommentHateCount(cno));
+          return null;
+        }
+        return "redirect:/board/"+comment.getBno();
+    }
+
+    @ResponseBody
+    @PatchMapping("/comment")
+    public Map<String, Object> boardCommentUpdate(@RequestBody Map<String, String> body, HttpSession session) {
+      Map<String, Object> map = new HashMap<String, Object>();
+      BoardCommentDTO comment = boardService.selectComment(Integer.parseInt(body.get("cno")));
+      if(session.getAttribute("user") != null && ((BoardMemberDTO)session.getAttribute("user")).getId().equals(comment.getId())){
+        comment.setContent(body.get("content"));
+        boardService.updateBoardComment(comment);
+        map.put("code", 1);
+        map.put("msg", "해당 댓글 수정 완료");
+      }else{
+        map.put("code", 2);
+        map.put("msg", "해당 댓글 작성자만 수정이 가능합니다.");
       }
       return map;
-    }  
+    }
+    
   
 
 

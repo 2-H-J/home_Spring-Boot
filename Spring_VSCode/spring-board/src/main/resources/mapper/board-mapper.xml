@@ -128,6 +128,15 @@
 	<select id="selectCommentHateCount" resultType="int">
 		select count(*) from board_comment_hate where cno = #{cno}
 	</select>
+
+	<!-- 기존 resultType="com.kh.dto.BoardCommentDTO"을 DTO에 @Alias("comment") 지정해서 resultType을 comment로만 사용가능 -->
+	<select id="selectComment" parameterType="int" resultType="comment">
+		select * from board_comment_view where cno = #{cno}
+	</select>
+
+	<update id="updateBoardComment" parameterType="com.kh.dto.BoardCommentDTO">
+		update board_comment set content = #{content} where cno = #{cno}
+	</update>
  	
 </mapper>
 

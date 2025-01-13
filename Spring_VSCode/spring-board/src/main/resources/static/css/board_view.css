@@ -15,29 +15,31 @@
     color: #007BFF;
 }
 
-/* 테이블 스타일 */
+/* 게시글 컨테이너 스타일 */
 .board-view-table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
     font-size: 16px;
-    text-align: left;
-    table-layout: fixed;
+    color: #333;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
-.board-view-table img{
-	width: 100%;	
-}
+
 .board-view-table th, .board-view-table td {
+    padding: 15px;
     border: 1px solid #ddd;
-    padding: 10px;
-    vertical-align: top;
 }
 
 .board-view-table th {
-    width: 20%;
     background-color: #f4f4f4;
     font-weight: bold;
-    text-align: right;
+    text-align: left;
+    width: 20%;
+    color: #333;
+    border-right: 1px solid #ddd;
 }
 
 .board-view-table td {
@@ -45,92 +47,190 @@
     background-color: #fff;
 }
 
-.board-view-table tr:nth-child(even) td {
-    background-color: #f9f9f9;
+.board-view-table tr:nth-child(odd) td {
+    background-color: #fafafa;
 }
 
-/* 버튼 스타일 */
-.actions {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.actions .btn {
+/* 좋아요, 싫어요 링크 스타일 */
+#btn_like, #btn_hate {
     display: inline-block;
-    padding: 10px 20px;
+    margin-right: 15px;
+    color: #007BFF;
     text-decoration: none;
-    color: white;
-    background-color: #007BFF;
-    border-radius: 4px;
-    transition: background-color 0.3s, transform 0.2s;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
-.actions .btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
+#btn_like:hover, #btn_hate:hover {
+    color: #0056b3;
 }
 
-.actions .btn:active {
-    background-color: #003d80;
-    transform: translateY(0);
+/* 수정/삭제 버튼 스타일 */
+#btn_update, #btn_delete {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* 기본 버튼 스타일 */
-.actions .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    text-decoration: none;
-    color: white;
-    border-radius: 4px;
-    margin: 0 5px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-/* 버튼 기본 색상 */
-.actions .btn:hover {
-    transform: translateY(-2px);
-}
-
-.actions .btn:active {
-    transform: translateY(0);
-}
-
-/* 목록 버튼 스타일 */
-.actions .btn {
-    background-color: #007BFF;
-}
-
-.actions .btn:hover {
-    background-color: #0056b3;
-}
-
-.actions .btn:active {
-    background-color: #003d80;
-}
-
-/* 수정 버튼 스타일 */
-.actions .edit-btn {
+#btn_update {
     background-color: #28a745;
+    color: white;
 }
 
-.actions .edit-btn:hover {
+#btn_update:hover {
     background-color: #218838;
 }
 
-.actions .edit-btn:active {
-    background-color: #1e7e34;
-}
-
-/* 삭제 버튼 스타일 */
-.actions .delete-btn {
+#btn_delete {
     background-color: #dc3545;
+    color: white;
 }
 
-.actions .delete-btn:hover {
-    background-color: #c82333;
-}
-
-.actions .delete-btn:active {
+#btn_delete:hover {
     background-color: #bd2130;
 }
 
+/* 댓글 섹션 스타일 */
+.comment_form {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.comment_form textarea {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+    font-size: 14px;
+}
+
+.comment_form button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.comment_form button:hover {
+    background-color: #0056b3;
+}
+
+.comment_container {
+    margin-top: 20px;
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.comment p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.comment span {
+    margin-right: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.comment .btn_comment_like,
+.comment .btn_comment_hate {
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.comment .btn_comment_like:hover,
+.comment .btn_comment_hate:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.comment button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.comment .btn_comment_delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.comment .btn_comment_delete:hover {
+    background-color: #bd2130;
+}
+
+.comment .btn_comment_update {
+    background-color: #28a745;
+    color: white;
+}
+
+.comment .btn_comment_update:hover {
+    background-color: #218838;
+}
+
+#btn_more {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#btn_more:hover {
+    background-color: #0056b3;
+}
+
+#btn_scroll_top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: none;
+    width: 50px;
+    height: 50px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#btn_scroll_top:hover {
+    background-color: #0056b3;
+    transform: translateY(-5px);
+}
