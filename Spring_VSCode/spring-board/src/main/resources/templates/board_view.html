@@ -81,7 +81,7 @@
 
 			// 댓글 삭제,수정 / 좋아요,싫어요 ------------------------------------------------------------------------------------
 			document.querySelector('.comment_container').onclick = (e) => {
-				e.preventDefault();
+				e.preventDefault(); // 댓글관련 버튼 이벤트시 페이지 새로 로딩 되어 페이지 위로가는거 막기
 				//댓글 좋아요 싫어요 눌렀을때만 반응하게끔 처리
 				if (e.target.className == 'btn_comment_like' || e.target.className == 'btn_comment_hate') {
 					console.log(e.target);
@@ -160,11 +160,11 @@
 				}
 			}
 
+			// 페이지 위로 올리기 스크롤 이벤트 핸들러------------------------------------------------------------------
 			const scrollTopButton = document.querySelector('#btn_scroll_top'); // 버튼 선택
-			// 스크롤 이벤트 핸들러
 			window.onscroll = () => {
 				// 페이지 스크롤 위치가 100px 이상이면 버튼 표시
-				if (window.scrollY > 100) {
+				if (window.scrollY > 500) {
 					scrollTopButton.style.display = 'block';
 				} else {
 					scrollTopButton.style.display = 'none';

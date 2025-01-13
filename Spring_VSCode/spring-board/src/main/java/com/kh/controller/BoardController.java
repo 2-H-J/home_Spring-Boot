@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RequestMapping("/board") // 컨트롤러의 기본 경로를 "/board"로 설정합니다.
 @Controller // Spring MVC에서 이 클래스를 컨트롤러로 사용하겠다는 선언입니다.
 public class BoardController {
@@ -48,7 +47,8 @@ public class BoardController {
     // 1. 세션에서 'visited'라는 이름으로 저장된 HashSet<Integer>를 가져옵니다.
     // - 'visited'는 사용자가 조회한 게시글 번호(bno)를 저장하는 역할을 합니다.
     // - 세션은 각 사용자별로 관리되므로, 다른 사용자의 조회 기록과 독립적으로 동작합니다.
-    @SuppressWarnings("unchecked") // @SuppressWarnings("unchecked") : 제네릭(Generics)과 관련된 **미확인 형변환 경고(unchecked cast warning)**를 억제하도록 지정
+    @SuppressWarnings("unchecked") // @SuppressWarnings("unchecked") : 제네릭(Generics)과 관련된 **미확인 형변환 경고(unchecked
+                                   // cast warning)**를 억제하도록 지정
     HashSet<Integer> visited = (HashSet<Integer>) session.getAttribute("visited");
 
     // 2. 세션에 'visited'가 없는 경우, 즉 사용자가 아직 게시글 조회 기록을 저장한 적이 없을 경우
@@ -183,44 +183,43 @@ public class BoardController {
     return map;
   }
 
-// 게시물 삭제 로직을 처리하는 메서드 -----------------------------------------------------------------------------------
-// HTTP GET 요청으로 /board/delete/{bno} 경로가 호출되었을 때 실행되는 메서드입니다.
-// 게시글 삭제를 처리하며, 작성자 본인만 삭제할 수 있도록 권한을 확인합니다.
+  // 게시물 삭제 로직을 처리하는 메서드 -----------------------------------------------------------------------------------
+  // HTTP GET 요청으로 /board/delete/{bno} 경로가 호출되었을 때 실행되는 메서드입니다.
+  // 게시글 삭제를 처리하며, 작성자 본인만 삭제할 수 있도록 권한을 확인합니다.
   @GetMapping("/delete/{bno}")
   public String boardDelete(@PathVariable int bno, HttpSession session, HttpServletResponse response) {
 
-      // 1. 사용자 로그인 상태와 작성자 본인 여부 확인
-      // 세션에서 "user" 속성을 확인하여 사용자가 로그인 상태인지 확인합니다.
-      // 또한, 세션에 저장된 사용자 ID와 삭제하려는 게시글의 작성자 ID를 비교하여 본인 여부를 확인합니다.
-      if (session.getAttribute("user") != null && 
-          ((BoardMemberDTO) session.getAttribute("user")).getId().equals(boardService.selectBoard(bno).getId())) {
+    // 1. 사용자 로그인 상태와 작성자 본인 여부 확인
+    // 세션에서 "user" 속성을 확인하여 사용자가 로그인 상태인지 확인합니다.
+    // 또한, 세션에 저장된 사용자 ID와 삭제하려는 게시글의 작성자 ID를 비교하여 본인 여부를 확인합니다.
+    if (session.getAttribute("user") != null &&
+        ((BoardMemberDTO) session.getAttribute("user")).getId().equals(boardService.selectBoard(bno).getId())) {
 
-          // 1-1. 사용자가 로그인 상태이고 본인이 작성한 게시글인 경우
-          // 서비스 계층을 호출하여 게시글을 삭제합니다.
-          boardService.deleteBoard(bno);
+      // 1-1. 사용자가 로그인 상태이고 본인이 작성한 게시글인 경우
+      // 서비스 계층을 호출하여 게시글을 삭제합니다.
+      boardService.deleteBoard(bno);
 
-      } else {
-          // 1-2. 사용자가 로그인하지 않았거나 본인이 작성한 게시글이 아닌 경우
+    } else {
+      // 1-2. 사용자가 로그인하지 않았거나 본인이 작성한 게시글이 아닌 경우
 
-          // 클라이언트에 HTML 응답을 보내기 위해 응답의 콘텐츠 타입을 설정합니다.
-          response.setContentType("text/html; charset=utf-8");
+      // 클라이언트에 HTML 응답을 보내기 위해 응답의 콘텐츠 타입을 설정합니다.
+      response.setContentType("text/html; charset=utf-8");
 
-          try {
-              // 자바스크립트를 사용하여 경고 메시지를 클라이언트에게 표시하고 이전 페이지로 이동시킵니다.
-              response.getWriter().println(
-                  "<script>alert('해당 글 작성자만 삭제가 가능합니다.'); history.back();</script>");
-              return null; // 메서드 실행을 종료하고, 클라이언트에게 별도의 뷰를 반환하지 않습니다.
-          } catch (Exception e) {
-              // 예외 발생 시 에러 메시지를 출력합니다.
-              e.printStackTrace();
-          }
+      try {
+        // 자바스크립트를 사용하여 경고 메시지를 클라이언트에게 표시하고 이전 페이지로 이동시킵니다.
+        response.getWriter().println(
+            "<script>alert('해당 글 작성자만 삭제가 가능합니다.'); history.back();</script>");
+        return null; // 메서드 실행을 종료하고, 클라이언트에게 별도의 뷰를 반환하지 않습니다.
+      } catch (Exception e) {
+        // 예외 발생 시 에러 메시지를 출력합니다.
+        e.printStackTrace();
       }
+    }
 
-      // 2. 게시글 삭제 완료 후 리다이렉트 처리
-      // 사용자를 메인 페이지로 리다이렉트 시킵니다.
-      return "redirect:/main";
+    // 2. 게시글 삭제 완료 후 리다이렉트 처리
+    // 사용자를 메인 페이지로 리다이렉트 시킵니다.
+    return "redirect:/main";
   }
-
 
   // 게시물 댓글 추가 로직을 처리하는 메서드 -----------------------------------------------------------------------------------
   @PostMapping("/comment")
@@ -263,114 +262,282 @@ public class BoardController {
   @GetMapping("/comment/{bno}") // HTTP GET 요청을 처리하며, URL 경로의 {bno}를 매핑하여 게시글 번호로 사용
   public List<BoardCommentDTO> getMethodName(@PathVariable int bno, @RequestParam int start) {
 
-      // 1. 게시글 번호(bno)와 시작 인덱스(start)를 이용하여 댓글 리스트를 조회
-      // - @PathVariable: URL 경로에서 {bno} 값을 추출하여 매개변수 bno에 매핑
-      // - @RequestParam: 쿼리 파라미터(start)의 값을 추출하여 매개변수 start에 매핑
-      // - 예: /comment/123?start=6 -> bno = 123, start = 6
+    // 1. 게시글 번호(bno)와 시작 인덱스(start)를 이용하여 댓글 리스트를 조회
+    // - @PathVariable: URL 경로에서 {bno} 값을 추출하여 매개변수 bno에 매핑
+    // - @RequestParam: 쿼리 파라미터(start)의 값을 추출하여 매개변수 start에 매핑
+    // - 예: /comment/123?start=6 -> bno = 123, start = 6
 
-      // 2. 서비스 계층을 호출하여 댓글 리스트를 가져옴
-      // - boardService.getCommentList(bno, start):
-      //   - bno: 특정 게시글의 댓글만 조회하기 위해 게시글 번호 전달
-      //   - start: 조회 시작 인덱스를 전달 (MyBatis 쿼리에서 RW 조건으로 사용)
-      //   - 댓글 5개씩 조회하기 위해 start와 start+4 범위를 쿼리에서 설정
+    // 2. 서비스 계층을 호출하여 댓글 리스트를 가져옴
+    // - boardService.getCommentList(bno, start):
+    // - bno: 특정 게시글의 댓글만 조회하기 위해 게시글 번호 전달
+    // - start: 조회 시작 인덱스를 전달 (MyBatis 쿼리에서 RW 조건으로 사용)
+    // - 댓글 5개씩 조회하기 위해 start와 start+4 범위를 쿼리에서 설정
 
-      List<BoardCommentDTO> commentList = boardService.getCommentList(bno, start);
+    List<BoardCommentDTO> commentList = boardService.getCommentList(bno, start);
 
-      // 3. 조회된 댓글 리스트를 클라이언트에 JSON 형식으로 반환
-      // - @ResponseBody: 반환값을 JSON 형식으로 직렬화하여 클라이언트에 전송
-      // - List<BoardCommentDTO>: 댓글 정보를 담은 DTO 객체 리스트를 JSON 형태로 응답
-      // - 클라이언트는 JSON 응답을 파싱하여 화면에 댓글을 추가로 표시
+    // 3. 조회된 댓글 리스트를 클라이언트에 JSON 형식으로 반환
+    // - @ResponseBody: 반환값을 JSON 형식으로 직렬화하여 클라이언트에 전송
+    // - List<BoardCommentDTO>: 댓글 정보를 담은 DTO 객체 리스트를 JSON 형태로 응답
+    // - 클라이언트는 JSON 응답을 파싱하여 화면에 댓글을 추가로 표시
 
-      return commentList;
+    return commentList;
   }
 
   // 댓글 좋아요 로직을 처리하는 메서드 -------------------------------------------------------------------
-  @GetMapping("/comment/like/{cno}")
-  @ResponseBody
+  @GetMapping("/comment/like/{cno}") // HTTP GET 요청을 처리하며 URL 경로의 {cno}를 댓글 번호로 사용
+  @ResponseBody // 메서드의 반환값을 JSON 형식으로 클라이언트에 반환
   public Map<String, Object> boardCommentLike(@PathVariable int cno, HttpSession session) {
-      Map<String, Object> map = new HashMap<String, Object>();
-      
-      if(session.getAttribute("user") == null){
-          map.put("code", 2);
-          map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
-      }else{
-          String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
-          try {
-              boardService.insertBoardCommentLike(cno, id);
-              map.put("code", 1);
-              map.put("msg", "해당 댓글에 좋아요 하셨습니다.");
-          } catch (Exception e) {
-              boardService.deleteBoardCommentLike(cno, id);
-              map.put("code", 1);
-              map.put("msg", "해당 댓글에 좋아요를 취소 하셨습니다.");
-          }
-          map.put("count", boardService.selectCommentLikeCount(cno));
-      }
-      return map;
-    } 
+    // 결과 데이터를 저장할 Map 객체 생성
+    Map<String, Object> map = new HashMap<String, Object>();
 
-    // 댓글 싫어요 로직 처리하는 메서드 -------------------------------------------------------------------
-  @GetMapping("/comment/hate/{cno}")
-  @ResponseBody
-  public Map<String, Object> boardCommentHate(@PathVariable int cno, HttpSession session) {
-      Map<String, Object> map = new HashMap<String, Object>();
-      
-    if(session.getAttribute("user") == null){
-        map.put("code", 2);
-        map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
-    }else{
-      String id = ((BoardMemberDTO)session.getAttribute("user")).getId();
-        try {
-          boardService.insertBoardCommentHate(cno, id);
-          map.put("code", 1);
-          map.put("msg", "해당 댓글에 싫어요 하셨습니다.");
-        } catch (Exception e) {
-            boardService.deleteBoardCommentHate(cno, id);
-            map.put("code", 1);
-            map.put("msg", "해당 댓글에 싫어요를 취소 하셨습니다.");
-        }
-      map.put("count", boardService.selectCommentHateCount(cno));
+    /**
+     * 이 메서드는 클라이언트로부터 댓글 좋아요 요청을 처리합니다.
+     * 
+     * 1. REST API 방식의 컨트롤러 메서드로, HTTP 요청과 매핑됩니다.
+     * 2. 반환값은 JSON 형식으로 클라이언트에 전달됩니다.
+     * 3. 이 메서드는 세션에서 사용자 로그인 여부를 확인하고,
+     * - 사용자가 로그인 상태일 경우, 댓글에 좋아요를 추가하거나 중복 좋아요를 취소합니다.
+     * - 로그인하지 않은 상태라면, 클라이언트에 경고 메시지를 반환합니다.
+     */
+
+    // 1. 사용자 로그인 여부 확인
+    if (session.getAttribute("user") == null) {
+      // 세션에 사용자 정보가 없을 경우, 즉 로그인이 안 된 상태
+      map.put("code", 2); // 2는 "로그인 필요" 상태 코드를 나타냅니다.
+      map.put("msg", "로그인 하셔야 이용하실수 있습니다."); // 클라이언트에 반환할 메시지
+    } else {
+      // 2. 로그인한 사용자 정보 가져오기
+      String id = ((BoardMemberDTO) session.getAttribute("user")).getId(); // 세션에서 사용자 ID를 가져옵니다.
+
+      /**
+       * BoardMemberDTO는 데이터 전송 객체(DTO)로, 사용자의 정보를 포함하는 객체입니다.
+       * 여기서 session.getAttribute("user")는 로그인한 사용자의 정보를 가져옵니다.
+       * 
+       * id는 사용자가 댓글에 좋아요를 추가하거나 취소할 때 필요한 유일한 사용자 식별 값입니다.
+       */
+
+      try {
+        // 3. 좋아요 추가 로직
+        boardService.insertBoardCommentLike(cno, id); // 댓글 좋아요를 데이터베이스에 추가
+        map.put("code", 1); // 1은 "성공" 상태 코드를 나타냅니다.
+        map.put("msg", "해당 댓글에 좋아요 하셨습니다."); // 성공 메시지 반환
+      } catch (Exception e) {
+        // 4. 좋아요 중복 시 취소 로직
+        boardService.deleteBoardCommentLike(cno, id); // 댓글 좋아요를 데이터베이스에서 제거
+        map.put("code", 1); // 중복 좋아요 취소도 성공으로 간주
+        map.put("msg", "해당 댓글에 좋아요를 취소 하셨습니다."); // 취소 메시지 반환
+      }
+
+      // 5. 댓글 좋아요 수 반환
+      map.put("count", boardService.selectCommentLikeCount(cno));
+      /**
+       * 좋아요 수를 가져오기 위해 서비스 계층의 selectCommentLikeCount 메서드를 호출합니다.
+       * 이 메서드는 데이터베이스에서 해당 댓글(cno)의 좋아요 개수를 조회하여 반환합니다.
+       * 반환값은 int 타입의 숫자이며, 클라이언트에 JSON 응답으로 포함됩니다.
+       */
     }
+
+    // 6. 결과 데이터를 JSON 형식으로 반환
     return map;
-  } 
 
-    // 댓글 삭제 로직 처리 메서드 -------------------------------------------------------------------
-    @GetMapping("/comment/delete/{cno}")
-    public String commentDelete(@PathVariable int cno, HttpSession session, HttpServletResponse response) {
-        BoardCommentDTO comment = boardService.selectComment(cno);
-        if(session.getAttribute("user") != null && ((BoardMemberDTO)session.getAttribute("user")).getId().equals(comment.getId())) {
-            boardService.deleteBoardComment(cno);
-        }else{
-          response.setContentType("text/html; charset=utf-8");
-          try {
-            response.getWriter().println("<script>alert('해당 글 작성자만 삭제가 가능합니다..'); history.back();</script>");
-            return null;
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-          return null;
+    /**
+     * 반환값은 Map<String, Object> 객체입니다.
+     * - key는 String 타입으로, 클라이언트가 응답 데이터를 이해할 수 있도록 정의됩니다.
+     * 예) "code", "msg", "count" 등
+     * - value는 Object 타입으로, 반환할 데이터 값입니다.
+     * 예) 상태 코드(1, 2), 메시지, 좋아요 개수 등
+     * 
+     * 이 메서드는 @ResponseBody 어노테이션에 의해 Map 객체를 JSON 형식으로 변환하여 클라이언트에 반환합니다.
+     * 예: {"code":1, "msg":"해당 댓글에 좋아요 하셨습니다.", "count":5}
+     */
+  }
+
+// 댓글 싫어요 로직 처리하는 메서드 -------------------------------------------------------------------
+@GetMapping("/comment/hate/{cno}") // HTTP GET 요청을 처리하며, URL 경로의 {cno}를 댓글 번호로 사용
+@ResponseBody // 메서드의 반환값을 JSON 형식으로 클라이언트에 반환
+public Map<String, Object> boardCommentHate(@PathVariable int cno, HttpSession session) {
+    // 결과 데이터를 저장할 Map 객체 생성
+    Map<String, Object> map = new HashMap<String, Object>();
+
+    /**
+     * 이 메서드는 댓글에 대한 "싫어요" 요청을 처리하는 RESTful API 엔드포인트입니다.
+     * 
+     * 1. URL 경로의 댓글 번호({cno})를 매핑하여 특정 댓글에 싫어요를 추가하거나 취소합니다.
+     * 2. 사용자의 로그인 여부를 확인한 뒤,
+     *    - 로그인된 사용자는 댓글 싫어요를 추가하거나, 이미 싫어요를 누른 경우 싫어요를 취소합니다.
+     *    - 비로그인 사용자는 경고 메시지를 반환합니다.
+     * 3. 최종적으로 싫어요 개수와 처리 상태 메시지를 JSON 형식으로 반환합니다.
+     */
+
+    // 1. 사용자 로그인 여부 확인
+    if (session.getAttribute("user") == null) {
+        // 사용자가 로그인하지 않은 경우 처리
+        map.put("code", 2); // 상태 코드 2는 "로그인 필요"를 나타냅니다.
+        map.put("msg", "로그인 하셔야 이용하실수 있습니다."); // 클라이언트에 반환할 경고 메시지
+    } else {
+        // 2. 로그인된 사용자의 ID 가져오기
+        String id = ((BoardMemberDTO) session.getAttribute("user")).getId(); 
+        /**
+         * `BoardMemberDTO`는 사용자 정보를 담은 데이터 전송 객체(DTO)입니다.
+         * - 세션에서 "user" 객체를 가져와 현재 로그인된 사용자의 정보를 얻습니다.
+         * - 사용자 ID는 댓글 싫어요를 추가하거나 취소할 때 고유 식별자로 사용됩니다.
+         */
+
+        try {
+            // 3. 댓글 싫어요 추가 로직
+            boardService.insertBoardCommentHate(cno, id); // 데이터베이스에 댓글 싫어요 추가
+            map.put("code", 1); // 상태 코드 1은 성공을 나타냅니다.
+            map.put("msg", "해당 댓글에 싫어요 하셨습니다."); // 싫어요 추가 성공 메시지 반환
+        } catch (Exception e) {
+            // 4. 댓글 싫어요 중복 시 처리 로직
+            boardService.deleteBoardCommentHate(cno, id); // 기존 싫어요를 데이터베이스에서 제거
+            map.put("code", 1); // 상태 코드 1은 성공(싫어요 취소)으로 간주
+            map.put("msg", "해당 댓글에 싫어요를 취소 하셨습니다."); // 싫어요 취소 성공 메시지 반환
         }
-        return "redirect:/board/"+comment.getBno();
+
+        // 5. 댓글의 싫어요 개수 조회
+        map.put("count", boardService.selectCommentHateCount(cno));
+        /**
+         * `selectCommentHateCount`는 댓글 번호(cno)를 기준으로 싫어요 개수를 데이터베이스에서 조회합니다.
+         * 반환값은 `int` 형식으로, 댓글에 누적된 싫어요 수를 나타냅니다.
+         * 이 값은 클라이언트에 JSON 형식으로 전달됩니다.
+         */
     }
 
-    @ResponseBody
-    @PatchMapping("/comment")
-    public Map<String, Object> boardCommentUpdate(@RequestBody Map<String, String> body, HttpSession session) {
-      Map<String, Object> map = new HashMap<String, Object>();
-      BoardCommentDTO comment = boardService.selectComment(Integer.parseInt(body.get("cno")));
-      if(session.getAttribute("user") != null && ((BoardMemberDTO)session.getAttribute("user")).getId().equals(comment.getId())){
-        comment.setContent(body.get("content"));
-        boardService.updateBoardComment(comment);
-        map.put("code", 1);
-        map.put("msg", "해당 댓글 수정 완료");
-      }else{
-        map.put("code", 2);
-        map.put("msg", "해당 댓글 작성자만 수정이 가능합니다.");
-      }
-      return map;
-    }
-    
-  
+    // 6. 결과를 JSON 형식으로 반환
+    return map;
 
+    /**
+     * 반환값은 `Map<String, Object>` 형태입니다.
+     * - key: 결과 데이터를 식별할 수 있는 문자열 값("code", "msg", "count" 등)
+     * - value: 결과 데이터를 담은 값(Object). 예: 상태 코드(Integer), 메시지(String), 싫어요 개수(Integer)
+     * 
+     * @ResponseBody 어노테이션 덕분에 이 Map 객체는 자동으로 JSON 형식으로 변환되어 클라이언트로 전송됩니다.
+     * 예시 응답:
+     * {"code":1, "msg":"해당 댓글에 싫어요 하셨습니다.", "count":3}
+     */
+}
+
+
+// 댓글 삭제 로직 처리 메서드 -------------------------------------------------------------------
+@GetMapping("/comment/delete/{cno}") // HTTP GET 요청으로 "/comment/delete/{cno}" URL에 매핑
+public String commentDelete(@PathVariable int cno, HttpSession session, HttpServletResponse response) {
+
+    // 1. 특정 댓글 번호(cno)를 기준으로 댓글 정보를 조회
+    BoardCommentDTO comment = boardService.selectComment(cno);
+    /**
+     * BoardCommentDTO는 댓글 정보를 담은 데이터 전송 객체(DTO)입니다.
+     * - `selectComment(cno)`: 댓글 번호(cno)를 기준으로 댓글 정보를 데이터베이스에서 조회합니다.
+     * - 반환값은 댓글의 작성자 ID, 댓글 내용, 게시글 번호 등 댓글 관련 데이터를 포함한 객체입니다.
+     *   예: BoardCommentDTO { id="작성자ID", content="댓글 내용", bno=123 }
+     */
+
+    // 2. 로그인 상태 및 댓글 작성자 확인
+    if (session.getAttribute("user") != null // 세션에 사용자가 로그인 상태인지 확인
+        && ((BoardMemberDTO) session.getAttribute("user")).getId().equals(comment.getId())) {
+        /**
+         * - 세션에서 "user" 속성을 가져와 로그인된 사용자 정보를 확인합니다.
+         * - `BoardMemberDTO`는 사용자 정보를 담은 DTO 객체로, 로그인된 사용자의 ID를 가져옵니다.
+         * - 댓글 작성자의 ID(`comment.getId()`)와 현재 로그인 사용자의 ID를 비교하여 동일한지 확인합니다.
+         * - 동일하면 본인이 작성한 댓글이므로 삭제를 허용합니다.
+         */
+
+        // 3. 댓글 삭제 로직 실행
+        boardService.deleteBoardComment(cno);
+        /**
+         * `deleteBoardComment(cno)`는 데이터베이스에서 해당 댓글 번호(cno)를 삭제합니다.
+         * 댓글 삭제는 게시글 번호와 관계없이 특정 댓글을 고유 번호로 식별하여 처리합니다.
+         */
+    } else {
+        // 4. 댓글 작성자가 아닌 경우 경고 메시지 반환
+        response.setContentType("text/html; charset=utf-8");
+        /**
+         * - 클라이언트로 HTML 형식의 응답을 보내기 위해 응답의 콘텐츠 타입을 설정합니다.
+         * - UTF-8 인코딩을 지정하여 한글 메시지가 올바르게 표시되도록 설정합니다.
+         */
+
+        try {
+            // JavaScript 경고 메시지를 클라이언트에게 전달
+            response.getWriter().println(
+                "<script>alert('해당 글 작성자만 삭제가 가능합니다..'); history.back();</script>");
+            /**
+             * - `response.getWriter().println()`: 클라이언트로 HTML 및 JavaScript 코드를 전송합니다.
+             * - alert(): 브라우저에 경고 메시지를 표시합니다.
+             * - history.back(): 브라우저의 이전 페이지로 돌아갑니다.
+             */
+            return null; // 메서드 실행을 종료하고 별도의 뷰를 반환하지 않음
+        } catch (Exception e) {
+            // 예외 발생 시 로그 출력
+            e.printStackTrace();
+        }
+        return null; // 예외 발생 시에도 클라이언트에 별도의 뷰를 반환하지 않음
+    }
+
+    // 5. 댓글 삭제 후 게시글 상세 페이지로 리다이렉트
+    return "redirect:/board/" + comment.getBno();
+    /**
+     * - 댓글 삭제가 완료되면 해당 댓글이 속한 게시글의 상세 페이지로 리다이렉트합니다.
+     * - `comment.getBno()`: 삭제된 댓글이 속한 게시글 번호를 가져옵니다.
+     * - "redirect:/board/{bno}": 스프링에서 리다이렉트 경로를 지정하는 형식입니다.
+     */
+}
+
+
+// 댓글 수정 로직 처리 메서드 -------------------------------------------------------------------
+@ResponseBody
+@PatchMapping("/comment") // HTTP PATCH 요청을 "/comment" 경로와 매핑
+public Map<String, Object> boardCommentUpdate(@RequestBody Map<String, String> body, HttpSession session) {
+    // 1. 반환할 데이터를 저장할 맵 객체 생성
+    Map<String, Object> map = new HashMap<String, Object>();
+    /**
+     * - Map<String, Object>: 수정 결과를 JSON 형식으로 반환하기 위해 사용됩니다.
+     * - 반환값의 키-값 구조:
+     *   - code: 작업 성공 여부를 나타내는 상태 코드 (1: 성공, 2: 실패)
+     *   - msg: 처리 결과 메시지
+     */
+
+    // 2. 수정하려는 댓글의 정보를 데이터베이스에서 조회
+    BoardCommentDTO comment = boardService.selectComment(Integer.parseInt(body.get("cno")));
+    /**
+     * - `body.get("cno")`: 요청 데이터로 전달된 댓글 번호를 가져옵니다.
+     * - `Integer.parseInt()`: 댓글 번호를 문자열에서 정수로 변환.
+     * - `boardService.selectComment(cno)`: 댓글 번호를 기준으로 데이터베이스에서 댓글 정보를 조회.
+     * - 반환값: 댓글 정보(BoardCommentDTO 객체), 댓글 작성자 ID, 댓글 내용 등을 포함.
+     */
+
+    // 3. 세션 확인 및 댓글 작성자 검증
+    if (session.getAttribute("user") != null // 세션에 사용자가 로그인 상태인지 확인
+        && ((BoardMemberDTO) session.getAttribute("user")).getId().equals(comment.getId())) {
+        /**
+         * - `session.getAttribute("user")`: 로그인된 사용자 정보를 가져옴.
+         * - `BoardMemberDTO`: 사용자 정보를 담은 DTO 객체.
+         * - `comment.getId()`: 댓글 작성자의 ID를 가져옴.
+         * - 조건: 로그인된 사용자와 댓글 작성자가 동일한 경우에만 댓글을 수정할 수 있음.
+         */
+
+        // 4. 댓글 내용 업데이트
+        comment.setContent(body.get("content")); // 요청 데이터에서 새로운 댓글 내용을 가져와 설정
+        boardService.updateBoardComment(comment); // 댓글 정보를 업데이트하는 서비스 호출
+        /**
+         * - `setContent()`: 댓글 내용 수정.
+         * - `boardService.updateBoardComment(comment)`: 수정된 댓글 정보를 데이터베이스에 업데이트.
+         */
+
+        // 5. 수정 성공 응답 생성
+        map.put("code", 1); // 상태 코드 1: 수정 성공
+        map.put("msg", "해당 댓글 수정 완료"); // 성공 메시지 반환
+    } else {
+        // 6. 댓글 작성자가 아닌 경우, 수정 불가 처리
+        map.put("code", 2); // 상태 코드 2: 수정 실패
+        map.put("msg", "해당 댓글 작성자만 수정이 가능합니다."); // 실패 메시지 반환
+    }
+
+    // 7. 클라이언트로 결과 반환 (JSON 형식)
+    return map;
+    /**
+     * - @ResponseBody: 반환값(Map 객체)을 JSON 형식으로 직렬화하여 클라이언트에 응답.
+     * - 클라이언트는 JSON 데이터를 파싱하여 결과를 화면에 표시하거나 로직을 처리.
+     */
+}
 
 }
