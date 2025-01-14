@@ -6,6 +6,7 @@
 	<title>Insert title here</title>
 	<link rel="stylesheet" href="/css/board_view.css">
 	<script>
+
 		window.onload = () => {
 			let commentCount = 6;
 			const userId = '[[${session.user != null ? session.user.id : ""}]]'; // 세션의 유저 아이디를 userId에 담아둔다 댓글삭제용
@@ -57,7 +58,7 @@
 							tag += `<div class="comment">
 									<p>
 										<input type="hidden" name="cno" value="${item.cno}">
-										<span>${item.id}</span>
+										<span>작성자 : ${item.id}</span>
 										<span>작성일 : ${item.cdate}</span>
 										<span><a href="#" class="btn_comment_like">좋아요 : <span>${item.clike}</span></a></span>
 										<span><a href="#" class="btn_comment_hate">싫어요 : <span>${item.chate}</span></a></span>
@@ -224,7 +225,7 @@
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align: justify;">
-					[[${board.content}]]
+					<div th:utext="${board.content}"></div>
 				</td>
 			</tr>
 			<tr>
@@ -248,7 +249,17 @@
 					</script>
 				</td>
 			</tr>
-
+			<tr>
+				<!-- 
+				   첨부파일 목록을 출력
+					다운로드 경로 : /board/download/파일번호
+			   -->
+				<td colspan="2">
+					<p th:each="file : ${fileList }">
+						<a th:href="@{/board/download/{fno}(fno=${file.fno})}">[[${file.fileName}]]</a>
+					</p>
+				</td>
+			</tr>
 			<tr>
 				<td colspan="2">
 					<!-- 댓글 입력 폼 -->

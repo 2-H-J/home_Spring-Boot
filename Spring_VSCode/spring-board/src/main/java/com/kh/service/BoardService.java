@@ -164,4 +164,8 @@ public class BoardService {
 		return mapper.updateBoardComment(comment);
 	}
 
+    public int selectBoardNo() {
+		return mapper.selectBoardNo();
+    }
+
 }

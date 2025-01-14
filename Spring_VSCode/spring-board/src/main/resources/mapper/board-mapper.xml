@@ -30,7 +30,7 @@
 	</select>
 	<insert id="insertBoard" parameterType="com.kh.dto.BoardDTO">
 		insert into board(bno, title, content, id)
-		values(#{bno}, #{title},#{content,jdbcType=CLOB},#{id})
+		values(#{bno}, #{title},#{content, jdbcType=CLOB}, #{id})
 	</insert>
 	<insert id="insertBoardFile" parameterType="com.kh.dto.BoardFileDTO">
 		insert into board_file(fno,bno,fpath)

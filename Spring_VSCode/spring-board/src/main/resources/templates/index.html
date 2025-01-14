@@ -12,8 +12,8 @@
   <div class="container">
     <h2 class="board-title">게시글 목록</h2>
     <!-- 글쓰기 버튼 -->
-    <div class="write-button-container">
-      <a href="/board/write" class="write-btn">글쓰기</a>
+    <div class="write-button-container" th:if="${session.user != null }">
+      <a href="/board/write/view" class="write-btn">글쓰기</a>
     </div>
     <!-- 게시판 글 목록 출력 -->
     <table class="board-table">
