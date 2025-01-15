@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.mapper.BoardMapper">
+	<resultMap type="com.kh.dto.BoardDTO" id="board">
+		<id column="bno" property="bno"/>
+		<result column="title" property="title"/>
+		<result column="write_date" property="writeDate"/>
+		<result column="write_update_date" property="writeUpdateDate"/>
+		<result column="bcount" property="bcount"/>
+		<result column="blike" property="blike"/>
+		<result column="bhate" property="bhate"/>
+		<result column="content" property="content"/>
+		<result column="nickname" property="nickName"/>
+	</resultMap>
+	<select id="getBoardList" parameterType="map" resultMap="board">
+		SELECT * FROM 
+		(SELECT 
+			CEIL(ROW_NUMBER() OVER(ORDER BY BNO DESC) / #{pageContentEa}) AS PAGE,
+			BV.*
+		 FROM BOARD_VIEW BV)
+		WHERE PAGE = #{pageNo}
+	</select>
+	<select id="selectBoardTotalCount" resultType="int">
+		select count(*) from board_view
+	</select>
+	<select id="selectBoardNo" resultType="int">
+		select seq_board_bno.nextval from dual
+	</select>
+	<insert id="insertBoard" parameterType="com.kh.dto.BoardDTO">
+		insert into board(bno, title, content, id)
+		values(#{bno}, #{title},#{content, jdbcType=CLOB}, #{id})
+	</insert>
+	<insert id="insertBoardFile" parameterType="com.kh.dto.BoardFileDTO">
+		insert into board_file(fno,bno,fpath)
+		values(SEQ_BOARD_FILE_FNO.nextval, #{bno}, #{fpath})
+	</insert>
+	<update id="updateBoard">
+		update board set title=#{title}, content=#{content}
+		where bno = #{bno}
+	</update>
+ 	<select id="selectBoard" resultMap="board">
+ 		select * from board_view where bno = #{bno}
+ 	</select>
+ 	<select id="getBoardFileList" parameterType="int" resultType="com.kh.dto.BoardFileDTO">
+ 		select * from board_file where bno = #{bno}
+ 	</select>
+ 	<select id="selectFilePath" parameterType="int" resultType="string">
+ 		select fpath from board_file where fno = #{fno}
+ 	</select>
+ 	
+ 	<update id="updateBoardCount">
+ 		update board set bcount = bcount + 1 where bno = #{bno} 
+ 	</update>
+ 	<insert id="insertBoardComment" parameterType="com.kh.dto.BoardCommentDTO">
+ 		insert into board_comment(cno, bno, content, id)
+ 		values(SEQ_BOARD_COMMENT_CNO.nextval, #{bno}, #{content}, #{id})
+ 	</insert>
+	<select id="getCommentList" resultType="com.kh.dto.BoardCommentDTO" parameterType="map">
+    <!--
+        댓글 리스트를 페이징 처리하여 반환하는 SQL 쿼리
+        - ROW_NUMBER(): 각 행에 고유한 순번을 부여 (cdate를 기준으로 내림차순 정렬)
+        - RW: ROW_NUMBER()로 생성된 순번을 나타내는 별칭
+        - #{bno}: 게시글 번호로 댓글 데이터를 필터링
+        - #{start}: 가져올 댓글의 시작 위치 (ROW_NUMBER() 기준)
+        - RW BETWEEN #{start} AND (#{start}+4): 시작 위치부터 5개의 댓글을 가져옴
+        - 페이징 처리:
+            1. 게시글 번호(BNO)에 해당하는 댓글만 조회
+            2. RW(순번)가 #{start}에서 #{start}+4 사이에 있는 행만 반환
+    -->
+		SELECT * FROM
+			(SELECT ROW_NUMBER() OVER(ORDER BY CDATE DESC) AS RW, BCV.*
+			FROM BOARD_COMMENT_VIEW BCV
+			WHERE BNO = #{bno})
+		WHERE RW BETWEEN #{start} AND (#{start}+4)
+	</select>
+
+ 	<delete id="deleteBoard">
+ 		delete from board where bno = #{bno}
+ 	</delete>
+ 	<delete id="deleteBoardComment">
+ 		delete from board_comment where cno = #{cno}
+ 	</delete>
+ 	<insert id="insertBoardLike" parameterType="map">
+ 		insert into board_content_like(bno,id)
+ 		values(#{bno},#{id})
+ 	</insert>
+ 	<delete id="deleteBoardLike" parameterType="map">
+ 		delete from board_content_like 
+ 		where bno = #{bno} and id = #{id}
+ 	</delete>
+ 	<insert id="insertBoardHate" parameterType="map">
+ 		insert into board_content_hate(bno,id)
+ 		values(#{bno},#{id})
+ 	</insert>
+ 	<delete id="deleteBoardHate" parameterType="map">
+ 		delete from board_content_hate 
+ 		where bno = #{bno} and id = #{id}
+ 	</delete>
+ 	<select id="getBoardLike" parameterType="int" resultType="int">
+ 		select count(*) from board_content_like where bno = #{bno}
+ 	</select>
+ 	<select id="getBoardHate" parameterType="int" resultType="int">
+ 		select count(*) from board_content_hate where bno = #{bno}
+ 	</select>
+ 	
+ 	<insert id="insertBoardCommentLike">
+ 		insert into board_comment_like(id,cno)
+ 		values(#{id},#{cno})
+ 	</insert>
+ 	<delete id="deleteBoardCommentLike">
+ 		delete from board_comment_like
+ 		where id like #{id} and cno = #{cno}
+ 	</delete>
+ 	<insert id="insertBoardCommentHate">
+ 		insert into board_comment_hate(id,cno)
+ 		values(#{id},#{cno})
+ 	</insert>
+ 	<delete id="deleteBoardCommentHate">
+ 		delete from board_comment_hate
+ 		where id like #{id} and cno = #{cno}
+ 	</delete>
+	
+	<select id="selectCommentLikeCount" resultType="int">
+		select count(*) from board_comment_like where cno = #{cno}
+	</select>
+	<select id="selectCommentHateCount" resultType="int">
+		select count(*) from board_comment_hate where cno = #{cno}
+	</select>
+
+	<!-- 기존 resultType="com.kh.dto.BoardCommentDTO"을 DTO에 @Alias("comment") 지정해서 resultType을 comment로만 사용가능 -->
+	<select id="selectComment" parameterType="int" resultType="comment">
+		select * from board_comment_view where cno = #{cno}
+	</select>
+
+	<update id="updateBoardComment" parameterType="com.kh.dto.BoardCommentDTO">
+		update board_comment set content = #{content} where cno = #{cno}
+	</update>
+ 	
+</mapper>
+
+
+
+
+
+

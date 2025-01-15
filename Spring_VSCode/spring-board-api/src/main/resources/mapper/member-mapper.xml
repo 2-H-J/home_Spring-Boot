@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.mapper.BoardMemberMapper">
+  <select id="selectAllMember" resultType="com.kh.dto.BoardMemberDTO">
+  	select * from board_member
+  </select>
+  <insert id="insertMember" parameterType="com.kh.dto.BoardMemberDTO">
+  	insert into board_member(id,password,username,nickname)
+  	values(#{id}, standard_hash(#{password},'SHA512'), #{userName}, #{nickName})   	
+  </insert>
+  <select id="selectNameMember" parameterType="string" resultType="com.kh.dto.BoardMemberDTO">
+  	select * from board_member where username like '%' || #{value} || '%'
+  </select>
+  <delete id="deleteMember" parameterType="string">
+  	delete from board_member where id = #{id}
+  </delete>
+  <select id="selectIdMember" parameterType="string" resultType="int">
+  	select count(*) as member_count from board_member where id like #{id}
+  </select>
+  <select id="findMemberByIdAndPassword" parameterType="map" resultType="com.kh.dto.BoardMemberDTO">
+  	select * from board_member
+  	where id like #{id} and password like STANDARD_HASH(#{password},'SHA512')
+  </select>
+  <update id="updateMember" parameterType="map">
+    update board_member
+    set
+      username = #{userName},
+      nickname = #{nickName},
+      grade = #{grade}
+      where id like #{id}
+  </update>
+  <update id="updateColumnMember" parameterType="map">
+    update board_member
+    set
+      ${column} = #{value}
+      where id like #{id}
+  </update>
+</mapper>
+
+
+
+
+
+
