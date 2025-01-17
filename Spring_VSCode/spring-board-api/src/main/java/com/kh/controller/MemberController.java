@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 // origins : 새로운 자원를 공유하는 도메인(허용하는 도메인) - 여러개인 경우 origins = {"http://localhost:8000", "http://localhost:8001"} 이렇게 표현, * = 전체
 // allowedHeaders : 실제 요청 중에 사용할 수 있는 요청 헤더 목록이다. pre-flight의 응답 헤더인 access-control-allow-header에 값이 사용
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MemberController {
     // 로그인 하기 위한 Service    
 	private final BoardMemberService memberService;

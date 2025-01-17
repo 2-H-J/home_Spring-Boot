@@ -362,8 +362,8 @@ public class BoardController {
   }
 
   // 댓글 좋아요 로직을 처리하는 메서드 -------------------------------------------------------------------
-  @GetMapping("/comment/like/{cno}") // HTTP GET 요청을 처리하며 URL 경로의 {cno}를 댓글 번호로 사용
   @ResponseBody // 메서드의 반환값을 JSON 형식으로 클라이언트에 반환
+  @GetMapping("/comment/like/{cno}") // HTTP GET 요청을 처리하며 URL 경로의 {cno}를 댓글 번호로 사용
   public Map<String, Object> boardCommentLike(@PathVariable int cno, HttpSession session) {
     // 결과 데이터를 저장할 Map 객체 생성
     Map<String, Object> map = new HashMap<String, Object>();
