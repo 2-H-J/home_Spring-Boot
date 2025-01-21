@@ -50,173 +50,178 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+// BoardController 클래스: Spring Boot 기반의 REST API 컨트롤러로 게시판 기능을 담당합니다.
+@RestController // @RestController는 Spring에서 RESTful 웹 서비스를 구현할 때 사용됩니다. @Controller와
+				// @ResponseBody가 합쳐진 형태로, JSON 형식으로 응답을 반환합니다.
+@CrossOrigin(origins = "*", allowedHeaders = "*") // @CrossOrigin은 다른 도메인에서의 요청을 허용합니다. '*'를 사용하면 모든 도메인의 요청을 허용합니다.
 public class BoardController {
 
-	private BoardService boardService;
-	private JwtTokenProvider tokenProvider;
+	// BoardService와 JwtTokenProvider 객체를 주입받습니다.
+	private BoardService boardService; // 게시판 관련 비즈니스 로직을 처리하는 서비스 객체. 데이터베이스와 상호작용하여 게시판 데이터를 처리합니다.
+	private JwtTokenProvider tokenProvider; // JWT 토큰 관련 기능을 처리하는 객체. 토큰 생성, 파싱, 인증 등을 수행합니다.
 
+	// 생성자를 통해 필요한 의존성을 주입받습니다.
 	public BoardController(BoardService boardService, JwtTokenProvider tokenProvider) {
-		this.boardService = boardService;
-		this.tokenProvider = tokenProvider;
+		this.boardService = boardService; // BoardService를 초기화합니다.
+		this.tokenProvider = tokenProvider; // JwtTokenProvider를 초기화합니다.
 	}
 
-	@GetMapping("/board/list")
-	public Map<String, Object> index(@RequestParam(defaultValue = "1") int pageNo,
-			@RequestParam(defaultValue = "30") int pageContentEa) {
-		System.out.println(pageNo);
-		// 전체 게시글 개수 조회
-		int count = boardService.selectBoardTotalCount();
-		// 페이지 번호를 보내서 해당 페이지 게시글 목록만 조회
-		List<BoardDTO> list = boardService.getBoardList(pageNo, pageContentEa);
-		// PaggingVO 페이징 정보 생성
-		PaggingVO pagging = new PaggingVO(count, pageNo, pageContentEa);
-		// 데이터 추가
-		Map<String, Object> map = new HashMap<>();
-		map.put("boardList", list);
-		map.put("pagging", pagging);
+	/**
+	 * 게시글 목록 조회 메서드
+	 * 
+	 * @param pageNo        페이지 번호 (기본값: 1)
+	 * @param pageContentEa 페이지당 게시글 수 (기본값: 30)
+	 * @return 게시글 목록과 페이징 정보를 담은 Map
+	 */
+	@GetMapping("/board/list") // HTTP GET 요청에 매핑됩니다.
+	public Map<String, Object> index(@RequestParam(defaultValue = "1") int pageNo, // 페이지 번호를 요청에서 받습니다.
+			@RequestParam(defaultValue = "30") int pageContentEa) { // 페이지당 게시글 수를 요청에서 받습니다.
+		// 전체 게시글 수 조회
+		int count = boardService.selectBoardTotalCount(); // 데이터베이스에서 전체 게시글 수를 조회합니다.
+		// 페이지 번호에 따라 게시글 목록 조회
+		List<BoardDTO> list = boardService.getBoardList(pageNo, pageContentEa); // 데이터베이스에서 해당 페이지의 게시글 목록을 가져옵니다.
+		// 페이징 정보 생성
+		PaggingVO pagging = new PaggingVO(count, pageNo, pageContentEa); // 게시글 페이징 처리를 위한 객체를 생성합니다.
 
-		return map;
+		// 데이터 반환을 위한 Map 생성
+		Map<String, Object> map = new HashMap<>(); // 결과 데이터를 담을 Map 객체를 생성합니다.
+		map.put("boardList", list); // 게시글 목록을 Map에 추가합니다.
+		map.put("pagging", pagging); // 페이징 정보를 Map에 추가합니다.
+
+		return map; // Map을 반환합니다.
 	}
 
-	@GetMapping("/board/{bno}")
-	public Map<String, Object> boardDetail(@PathVariable int bno) {
-		Map<String, Object> map = new HashMap<>();
-		BoardDTO board = boardService.selectBoard(bno);
-		List<BoardCommentDTO> commentList = boardService.getCommentList(bno, 1);
-		List<BoardFileDTO> fileList = boardService.getBoardFileList(bno);
+	/**
+	 * 게시글 상세 조회 메서드
+	 * 
+	 * @param bno 게시글 번호
+	 * @return 게시글, 댓글 목록, 파일 목록을 담은 Map
+	 */
+	@GetMapping("/board/{bno}") // URL 경로에서 {bno} 부분의 값을 변수로 매핑합니다.
+	public Map<String, Object> boardDetail(@PathVariable int bno) { // 요청 경로에서 게시글 번호를 받아옵니다.
+		Map<String, Object> map = new HashMap<>(); // 데이터를 담을 Map 생성
+		BoardDTO board = boardService.selectBoard(bno); // 데이터베이스에서 게시글 정보를 조회합니다.
+		List<BoardCommentDTO> commentList = boardService.getCommentList(bno, 1); // 데이터베이스에서 해당 게시글의 댓글 목록을 조회합니다.
+		List<BoardFileDTO> fileList = boardService.getBoardFileList(bno); // 데이터베이스에서 해당 게시글의 파일 목록을 조회합니다.
 
-		map.put("board", board);
-		map.put("commentList", commentList);
-		map.put("fileList", fileList);
+		// Map에 데이터 추가
+		map.put("board", board); // 조회한 게시글 정보를 Map에 추가합니다.
+		map.put("commentList", commentList); // 조회한 댓글 목록을 Map에 추가합니다.
+		map.put("fileList", fileList); // 조회한 파일 목록을 Map에 추가합니다.
 
-		return map;
+		return map; // Map을 반환합니다.
 	}
 
-	// @PostMapping("/board/write")
-	// public Map<String, Object> boardWrite(
-	// @RequestHeader("Authorization") String token,
-	// @RequestPart("title") String title,
-	// @RequestPart("content") String content){
-	// Map<String, Object> map = new HashMap<>();
-	// token = token != null ? token.replace("Bearer ", "") : null;
-	// System.out.println(token);
-	// System.out.println(tokenProvider.getUserIDFromToken(token));
-	// System.out.println(title);
-	// System.out.println(content);
-	//
-	// map.put("msg", "테스트 메세지");
-	// return map;
-	// }
-	@PostMapping("/board/write")
+	/**
+	 * 게시글 작성 메서드
+	 * 
+	 * @param token  JWT 인증 토큰 (헤더에서 전달받음)
+	 * @param params 게시글 정보 (제목과 내용)
+	 * @param files  첨부 파일 목록
+	 * @return 작성 성공 여부와 메시지를 담은 Map
+	 */
+	@PostMapping("/board/write") // HTTP POST 요청에 매핑됩니다.
 	public Map<String, Object> boardWrite(
-			@RequestHeader("Authorization") String token,
-			@RequestPart("params") String params,
-			@RequestPart(value = "files", required = false) MultipartFile[] files) throws IllegalStateException, IOException {
-		Map<String, Object> map = new HashMap<>();
-		token = token != null ? token.replace("Bearer ", "") : null;
-		// System.out.println(token);
-		// System.out.println(tokenProvider.getUserIDFromToken(token));
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		Map<String, String> paramsMap = objectMapper.readValue(params, new TypeReference<Map<String, String>>() {});
-		System.out.println(paramsMap.get("title"));
-		System.out.println(paramsMap.get("content"));
+			@RequestHeader("Authorization") String token, // 요청 헤더에서 JWT 토큰을 가져옵니다.
+			@RequestPart("params") String params, // 요청의 일부로 전달된 게시글 정보를 JSON 문자열로 받습니다.
+			@RequestPart(value = "files", required = false) MultipartFile[] files // 첨부 파일 배열
+	) throws IllegalStateException, IOException {
+		Map<String, Object> map = new HashMap<>(); // 반환할 데이터를 담을 Map 생성
+		token = token != null ? token.replace("Bearer ", "") : null; // "Bearer " 접두어 제거
 
-		BoardDTO board = new BoardDTO();
-		
-		try{
-		board.setId(tokenProvider.getUserIDFromToken(token));
-		}catch(Exception e) {
-			map.put("msg", "로그인 하셔야 이용하실수 있습니다.");
-			map.put("code", 2);
-			return map;
+		ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위한 ObjectMapper 객체 생성. Jackson 라이브러리를 사용합니다.
+		// ObjectMapper는 JSON 데이터를 Java 객체로 변환하거나 그 반대로 변환할 때 사용됩니다.
+		Map<String, String> paramsMap = objectMapper.readValue(params, new TypeReference<Map<String, String>>() {
+		}); // JSON 문자열을 Map으로 변환
+		// paramsMap: 게시글 작성 요청의 JSON 데이터를 파싱하여 제목(title)과 내용(content)을 Map 형태로 저장합니다.
+
+		BoardDTO board = new BoardDTO(); // 게시글 정보를 담을 DTO 생성. DTO(Data Transfer Object)는 데이터 전달용 객체입니다.
+
+		try {
+			board.setId(tokenProvider.getUserIDFromToken(token)); // 토큰에서 사용자 ID를 추출하여 게시글 작성자 ID로 설정합니다.
+			// tokenProvider: JWT 토큰을 파싱하거나 검증하여 사용자 ID 또는 기타 정보를 추출합니다.
+		} catch (Exception e) { // 인증 실패 시 예외 처리
+			map.put("msg", "로그인 하셔야 이용하실 수 있습니다."); // 오류 메시지를 Map에 추가
+			map.put("code", 2); // 실패 코드 추가
+			return map; // 실패 응답 반환
 		}
-		board.setTitle(paramsMap.get("title"));
-		board.setContent(paramsMap.get("content"));
 
-		int bno = boardService.selectBoardNo();
-		board.setBno(bno);
+		board.setTitle(paramsMap.get("title")); // 게시글 제목 설정. paramsMap에서 제목 데이터를 가져옵니다.
+		board.setContent(paramsMap.get("content")); // 게시글 내용 설정. paramsMap에서 내용 데이터를 가져옵니다.
 
-		// 파일 업로드
-		List<BoardFileDTO> fileList = new ArrayList<>(); // 업로드 파일 정보를 저장할 리스트 생성
-		File root = new File("C:\\fileupload"); // 업로드 파일 저장 디렉터리 경로 지정
+		int bno = boardService.selectBoardNo(); // 새로운 게시글 번호 생성. 데이터베이스에서 가장 최신 게시글 번호를 조회 후 증가된 번호를 반환합니다.
+		board.setBno(bno); // 게시글 번호 설정
 
-		// 해당 경로가 있는지 체크
-		if (!root.exists()) { // 경로가 존재하지 않으면
-		root.mkdirs(); // 디렉터리 생성
+		// 첨부 파일 처리
+		List<BoardFileDTO> fileList = new ArrayList<>(); // 첨부 파일 정보를 담을 리스트 생성
+		File root = new File("C:\\fileupload"); // 파일 저장 경로 설정
+		if (!root.exists()) { // 저장 경로가 존재하지 않으면
+			root.mkdirs(); // 디렉토리 생성
 		}
-		if (files != null) {
-			for (MultipartFile file : files) { // 업로드된 파일들을 반복 처리
-				if (file.isEmpty()) { // 파일이 비어있으면 건너뜀
+		if (files != null) { // 첨부 파일이 있을 경우
+			for (MultipartFile file : files) { // 파일 배열을 반복 처리
+				if (file.isEmpty()) { // 파일이 비어 있으면 건너뜁니다.
 					continue;
 				}
-			String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename(); // 고유 파일 이름 생성
-			String filePath = root + File.separator + fileName; // 저장할 파일 경로 생성
-			file.transferTo(new File(filePath)); // 실제 파일 저장
-			BoardFileDTO fileDTO = new BoardFileDTO(); // 파일 정보 DTO 생성
-			fileDTO.setBno(bno);
-			fileDTO.setFpath(filePath); // 파일 경로 설정
-			fileList.add(fileDTO); // 파일 정보 리스트에 추가
+				String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename(); // 고유 파일 이름 생성
+				String filePath = root + File.separator + fileName; // 저장할 파일 경로 생성
+				file.transferTo(new File(filePath)); // 실제 파일 저장
+
+				BoardFileDTO fileDTO = new BoardFileDTO(); // 파일 정보를 담을 DTO 생성
+				fileDTO.setBno(bno); // 게시글 번호 설정
+				fileDTO.setFpath(filePath); // 파일 경로 설정
+				fileList.add(fileDTO); // 리스트에 파일 정보 추가
 			}
 		}
 
-		// 3. 서비스 계층에 게시글과 파일 정보 전달
-		// boardService.insertBoard(board, fileList);
-
-		// 4. 작성된 게시글 상세 페이지로 리다이렉트
-
-		int count = boardService.insertBoard(board, fileList);
-		if (count != 0) {
-			map.put("bno", bno);
-			map.put("code", 1);
-			map.put("msg", "게시글 쓰기 성공");
-		}else {
-			map.put("msg", "게시글 쓰기 실패");
-			map.put("code", 2);
+		int count = boardService.insertBoard(board, fileList); // 게시글과 첨부 파일 정보 저장
+		if (count != 0) { // 저장 성공 여부 확인
+			map.put("bno", bno); // 게시글 번호 추가
+			map.put("code", 1); // 성공 코드 추가
+			map.put("msg", "게시글 쓰기 성공"); // 성공 메시지 추가
+		} else { // 저장 실패 처리
+			map.put("msg", "게시글 쓰기 실패"); // 실패 메시지 추가
+			map.put("code", 2); // 실패 코드 추가
 		}
 
-		return map;
+		return map; // 결과 반환
 	}
 
-	// 파일 다운로드 처리 메서드 -------------------------------------------------------------------
-	@GetMapping("board/download/{fno}") // HTTP GET 요청으로 "/download/{fno}" 경로를 처리
+	/**
+	 * 파일 다운로드 메서드
+	 * 
+	 * @param fno      파일 번호
+	 * @param response HTTP 응답 객체
+	 * @return 다운로드할 파일 리소스를 포함한 ResponseEntity
+	 */
+	@GetMapping("board/download/{fno}")
 	public ResponseEntity<Resource> fileDownload(@PathVariable int fno, HttpServletResponse response)
-		throws FileNotFoundException, IOException {
-		// 1. 파일 경로 정보 가져오기
-		String filePath = boardService.selectFilePath(fno); // 파일 번호로 파일 경로 조회
-
-		// 2. 파일 다운로드 설정
-		File file = new File(filePath); // 다운로드할 파일 객체 생성
+			throws FileNotFoundException, IOException {
+		String filePath = boardService.selectFilePath(fno); // 파일 경로 조회
+		File file = new File(filePath); // 파일 객체 생성
 		String encodingFileName = URLEncoder.encode(file.getName(), StandardCharsets.UTF_8); // 파일명 인코딩
-		Resource resource = new FileSystemResource(file); // Resource : 전송할 파일을 선택하는 클래스? - org.springframework.core.io.Resource
-		String contentDisposition = "attachment;fileName=" + encodingFileName; // 헤더 설정
+		Resource resource = new FileSystemResource(file); // 파일 리소스 생성
+		String contentDisposition = "attachment;fileName=" + encodingFileName; // Content-Disposition 헤더 설정
 
-		
-		return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
-		// HttpHeaders - org.springframework.http.HttpHeaders
-		/*
-		// 초기 파일 다운로드 코드
-		response.setHeader("Content-Disposition", "attachment;fileName=" + encodingFileName); // 헤더 설정
-		response.setHeader("Content-Transfer-Encoding", "binary"); // 바이너리 데이터 전송 설정
-		response.setContentLength((int) file.length()); // 파일 크기 설정
-
-		// 3. 파일 전송
-		try (FileInputStream fis = new FileInputStream(file);
-			BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream())) {
-		byte[] buffer = new byte[1024 * 1024]; // 버퍼 크기 설정
-			while (true) {
-				int count = fis.read(buffer); // 파일 읽기
-				if (count == -1) { // EOF 확인
-				break;
-				}
-				bos.write(buffer, 0, count); // 클라이언트에 데이터 전송
-				bos.flush(); // 데이터 플러시
-			}
-		}
-		*/
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_OCTET_STREAM) // 응답 본문 유형 설정
+				.header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition) // Content-Disposition 헤더 추가
+				.body(resource); // 파일 리소스를 응답 본문에 추가
 	}
+
+	/**
+	 * 코드 흐름 및 설명:
+	 * 1. RESTful API 컨트롤러로, 클라이언트의 요청을 처리하고 데이터를 반환합니다.
+	 * 2. @RestController와 @CrossOrigin을 통해 API 응답 형식과 CORS를 설정합니다.
+	 * 3. 주요 메서드는 다음과 같습니다:
+	 * - 게시글 목록 조회: 전체 게시글 목록과 페이징 정보를 반환합니다.
+	 * - 게시글 상세 조회: 특정 게시글과 관련된 댓글 및 파일 목록을 반환합니다.
+	 * - 게시글 작성: 새로운 게시글과 첨부 파일을 저장합니다.
+	 * - 파일 다운로드: 파일 경로를 조회하고 해당 파일을 다운로드합니다.
+	 * 4. 서비스 계층(BoardService)을 통해 데이터베이스 작업을 수행하며, 비즈니스 로직을 분리합니다.
+	 * 5. JWT 토큰을 통해 인증 및 사용자 식별을 수행합니다.
+	 */
+
 
 	@GetMapping("/board/comment/{bno}")
 	public List<BoardCommentDTO> getMethodName(@PathVariable int bno, @RequestParam int start) {
