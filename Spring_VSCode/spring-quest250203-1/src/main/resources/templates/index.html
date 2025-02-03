@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	.container{
+		width: 1600px;
+		margin: 0 auto;
+		display: flex;
+		flex-flow: row nowrap;
+		font-size: 0.8em;
+		
+	}
+	h2,form{
+		text-align: center;
+	}
+	.frm_search{
+		width: 1200px;
+		margin:0 auto;
+		text-align: center;
+	}
+	.item {
+		display: flex;
+		flex-flow: row nowrap;
+		gap:10px 20px;
+	}
+	article{
+		width: 70%;
+		box-sizing: border-box;
+		padding:10px;
+		border:1px solid black;
+	}
+	.search_list p{
+		display: flex;
+		flex-flow: row nowrap; 
+		gap : 10px;
+	}
+	aside{
+		width: 30%;
+		box-sizing: border-box;
+		padding:10px;
+		border:1px solid black;
+	}
+	.history_list > table{
+		width:100%;
+		text-align: center;
+	}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+	function searchAjax(text){
+			let obj = {
+					search : text
+			}
+			$.ajax({
+				url:'/search',
+				data : obj,
+				dataType:'xml',
+				method:'GET',
+				success:function(r){
+					let tag = '';
+					console.log(r)
+					let item = r.querySelectorAll('item');
+					console.log(item)
+					$(item).each(function(obj,idx){
+						tag += "<p>";
+						tag += "<span>" + $(this).find('yadmNm').text()  + "</span>";
+						tag += "<span>" + $(this).find('telno').text()  + "</span>";
+						tag += "<span>" + $(this).find('addr').text() + "</span>";
+						tag += "</p>";
+					})
+					$('.search_list').html(tag);
+					historyAjax();
+				}
+			});
+	}
+	function historyAjax(){
+			$.ajax({
+				url:'/history',
+				dataType:'json',
+				method:'GET',
+				success:function(r){
+					let tag = '';
+					console.log(r)
+					tag = r.reduce((prev, cur) => `${prev}<tr><td>${cur.searchDate}</td><td>${cur.searchText}</td></tr>`,'');
+					$(".history_body").html(tag);
+				}
+			});
+	}
+	$(function(){
+		
+	});
+</script>
+</head>
+<body>
+	<h2>약국 검색 페이지</h2>
+	
+	<div class="frm_search">
+		<input type="text" class="txt_search" placeholder="검색할 동을 입력하세요"><button class="btn_search">검색</button>
+	</div>
+	<hr>
+	<div class="container">
+		<article>
+			<h2>검색 결과</h2>
+			<div class="search_list"></div>
+		</article>
+		<aside>
+			<h2>방문 기록</h2>
+			<div class="history_list">
+				<table>
+					<thead>
+						<tr>
+							<th>검색일시</th>
+							<th>검색어</th>
+						</tr>
+					</thead>
+					<tbody class="history_body">
+						
+					</tbody>
+				</table>
+			</div>
+		</aside>
+	</div>
+	
+</body>
+</html>

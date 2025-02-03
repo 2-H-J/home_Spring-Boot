@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Insert title here</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body{
+    	text-align: center;
+    }
+    #searchBtn{
+    	padding:10px;
+    }
+	#searchResult{
+		width: 1200px;
+		margin : 0 auto;
+	}
+    #searchResult img {
+      width: 100px;
+    }
+
+    #searchResult table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #searchResult table tr td {
+      border: 1px solid #000;
+      padding: 5px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+    $(function () {
+      $("#searchBtn").click(function () {
+        $.ajax({
+          url: "",
+          type: "get",
+          dataType: "json",
+          success: function (data) {
+            console.log(data);
+
+            let tag = "<table>";
+            tag += "<tr>";
+            tag += "<td>콘텐츠번호</td>";
+            tag += "<td>제목</td>";
+            tag += "<td>이미지</td>";
+            tag += "<td>촬영일</td>";
+            tag += "<td>촬영지</td>";
+            tag += "<td>촬영자</td>";
+            tag += "<td>검색어</td>";
+            tag += "</tr>";
+            data.response.body.items.item.forEach(function (item, idx) {
+              //표 형태로 출력
+              tag += "<tr>";
+              tag += "<td>" + item.galContentId+ "</td>";
+              tag += "<td>" + item.galTitle + "</td>";
+
+              tag += "<td>" + item.galPhotographyMonth + "</td>";
+              tag += "<td>" + item.galPhotographyLocation + "</td>";
+              tag += "<td>" + item.galPhotographer + "</td>";
+              tag += "<td>" + item.galSearchKeyword + "</td>";
+              tag += "</tr>";
+
+            });
+            tag += "</table>";
+            $("#searchResult").html(tag);
+          }
+        });
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <button id="searchBtn">관광 사진 데이터 요청하기</button>
+  <hr>
+  <!-- 검색 결과를 보여줄 div -->
+  <div id="searchResult"></div>
+
+</body>
+
+</html>

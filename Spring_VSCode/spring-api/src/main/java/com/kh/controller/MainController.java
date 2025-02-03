@@ -19,7 +19,7 @@ public class MainController {
 	public String index() {
 		return "index-jquery";
 	}
-	
+    
 	@GetMapping("/api/call")
 	@ResponseBody
 	public String callApi(@RequestParam(defaultValue = "", required = false) String search) throws IOException {
