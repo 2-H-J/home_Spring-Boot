@@ -8,9 +8,6 @@ import com.kh.dto.CarDTO;
 
 @Mapper
 public interface QuestMapper {
-
 	List<CarDTO> selectAllCar();
-  List<CarDTO> searchCar(String carName);
-  int deleteCar(String carId);
-
+	int insertCar(CarDTO dto);
 }

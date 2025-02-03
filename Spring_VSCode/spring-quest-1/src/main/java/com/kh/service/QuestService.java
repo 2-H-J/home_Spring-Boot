@@ -19,12 +19,8 @@ public class QuestService {
 		return mapper.selectAllCar();
 	}
 
-  public List<CarDTO> searchCar(String carName) {
-		return mapper.searchCar(carName);
-  }
-
-  public void deleteCar(String carId) {
-		mapper.deleteCar(carId);
+	public int insertCar(CarDTO dto) {
+		return mapper.insertCar(dto);
 	}
 	
 	

@@ -4,19 +4,29 @@ import org.apache.ibatis.type.Alias;
 
 @Alias("member")
 public class BoardMemberDTO {
-    private String id;
-    private String password;
-    private String userName;
-    private String nickName;
-    private int grade;
-    
-    public BoardMemberDTO(String id, String password, String userName, String nickName, int grade) {
+	private String id;
+	private String password;
+	private String userName;
+	private String nickName;
+	private int grade;
+
+    public BoardMemberDTO(String id, String password, String userName, String nickName,int grade) {
         this.id = id;
         this.password = password;
         this.userName = userName;
         this.nickName = nickName;
-        this.grade = grade;
+		this.grade = grade;
     }
+
+	public int getGrade() {
+		return grade;
+	}
+
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
+
+	public BoardMemberDTO() {    }
 
     public String getId() {
         return id;
@@ -50,19 +60,10 @@ public class BoardMemberDTO {
         this.nickName = nickName;
     }
 
-    public int getGrade() {
-        return grade;
-    }
+	@Override
+	public String toString() {
+		return "BoardMemberDTO [id=" + id + ", password=" + password + ", userName=" + userName + ", nickName="
+				+ nickName + ", grade=" + grade + "]";
+	}
 
-    public void setGrade(int grade) {
-        this.grade = grade;
-    }
-
-    @Override
-    public String toString() {
-        return "BoardMemberDTO [id=" + id + ", password=" + password + ", userName=" + userName + ", nickName="
-                + nickName + ", grade=" + grade + "]";
-    }
-
-    
 }

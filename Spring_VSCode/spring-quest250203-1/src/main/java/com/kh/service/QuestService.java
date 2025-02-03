@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.quest.dto.QuestDTO;
-import com.quest.mapper.QuestMapper;
+import com.kh.dto.QuestDTO;
+import com.kh.mapper.QuestMapper;
 
 @Service
 public class QuestService {

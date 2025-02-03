@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<input type="text" id="name">
+	<input type="text" id="age">
+	<button id="btn_send">전송</button>
+	<script>
+		document.querySelector("#btn_send").onclick = () => {
+			fetch(`/call?name=${document.querySelector('#name').value}&age=${document.querySelector('#age').value}`).
+			then(response => response.text()).
+			then(result => console.log(result));
+		}
+	
+	</script>
+</body>
+</html>

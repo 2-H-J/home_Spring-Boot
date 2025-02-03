@@ -11,20 +11,19 @@
 		<result column="car_make_year" property="carMakeYear" />
 		<result column="car_price" property="carPrice" />
 	</resultMap>
-	
+
 	<select id="selectAllCar" resultMap="car">
-		select * from car order by car_id desc
-	</select>
-	
-	<select id="searchCar" resultMap="car">
-		select * from car where car_name like '%' || #{carName} || '%'
+		select * from car order by
+		car_id desc
 	</select>
 
-	<delete id="deleteCar" parameterType="string">
-		delete from car where car_id = #{carId}
-	</delete>
-	
-	
+	<insert id="insertCar" parameterType="car">
+		insert into car
+		values(#{carId}, #{carName}, #{carMaker}, #{carMakeYear}, #{carPrice})
+	</insert>
+
+
+
 </mapper>
 
 
