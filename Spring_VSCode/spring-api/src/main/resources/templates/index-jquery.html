@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+	$(function() {
+		$('button').click(() => {
+			$.ajax({
+				url : '/api/call',
+				dataType : 'xml',
+				data : {
+					search : $('.txt').val()
+				},
+				method : 'GET',
+				success : function(r){
+					let tag = '';
+					r.querySelectorAll('item').forEach(item => {
+					tag += `<p>시/도 : ${item.querySelector('gubun').innerHTML}</p>`
+					tag += `<p>감염자수 : ${item.querySelector('defCnt').innerHTML}</p>`
+				})
+				$('#container').html(tag);
+				}
+			})
+		})
+	});
+</script>
+</head>
+<body>
+	<input type="text" class="txt"> <button type="button">검색</button>
+	<hr>
+	<div id="container"></div>
+</body>
+</html>
