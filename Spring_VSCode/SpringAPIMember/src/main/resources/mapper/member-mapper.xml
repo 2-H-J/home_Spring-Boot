@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.member.mapper.MemberMapper">
+	<!-- 로그인 -->
+	<select id="login" parameterType="map" resultType="member">
+		select * from
+		board_member
+		where id like #{id} and
+		password
+		like STANDARD_HASH(#{pass},'SHA512')
+	</select>
+
+	<select id="selectAllMember" resultType="member">
+		select * from
+		board_member
+	</select>
+
+	<select id="selectMember" parameterType="string"
+		resultType="member">
+		select * from board_member where id = #{id}
+	</select>
+
+	<update id="updateMember" parameterType="member">
+		update board_member set username = #{userName},
+		board_member_nick = #{nickName}
+		, password =
+		standard_hash(#{password},'SHA512'),
+		grade = #{grade}
+		where id like
+		#{id}
+	</update>
+	
+	<delete id="deleteMember" parameterType="string">
+		delete from board_member where id like #{id}
+	</delete>
+	
+	<insert id="insertMember" parameterType="member">
+		insert into board_member
+		values(#{id},#{password},#{userName},#{nickName},#{grade})
+	</insert>
+
+	<select id="selectAllGrade" resultType="grade">
+		select * from board_grade
+	</select>	
+	
+	<update id="updateGrade" parameterType="grade">
+		update board_grade set name = #{gradeName}
+		where no = #{gradeNo}
+	</update>
+	
+	<insert id="insertGrade" parameterType="grade">
+		insert into board_grade
+		values(#{gradeNo}, #{gradeName})
+	</insert>
+	
+	<delete id="deleteGrade">
+		delete from board_grade
+		where no = #{gradeNo}
+	</delete>
+	
+	<select id="selectGradeMember" resultType="member">
+		select * from board_member
+		where 
+		grade in
+		<foreach collection="array" open="(" item="i" separator="," close=")">
+		#{i}
+		</foreach>		
+		
+	</select>
+</mapper>
+
+
+
+
+
+

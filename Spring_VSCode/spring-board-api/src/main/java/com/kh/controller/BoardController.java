@@ -131,6 +131,7 @@ public class BoardController {
 
 		ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위한 ObjectMapper 객체 생성. Jackson 라이브러리를 사용합니다.
 		// ObjectMapper는 JSON 데이터를 Java 객체로 변환하거나 그 반대로 변환할 때 사용됩니다.
+		
 		Map<String, String> paramsMap = objectMapper.readValue(params, new TypeReference<Map<String, String>>() {
 		}); // JSON 문자열을 Map으로 변환
 		// paramsMap: 게시글 작성 요청의 JSON 데이터를 파싱하여 제목(title)과 내용(content)을 Map 형태로 저장합니다.

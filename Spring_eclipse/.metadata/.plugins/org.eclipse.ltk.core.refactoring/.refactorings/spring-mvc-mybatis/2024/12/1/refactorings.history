@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;member_insert_view.jsp&apos; to &apos;views&apos;&#x0D;&#x0A;- Original project: &apos;spring-mvc-mybatis&apos;&#x0D;&#x0A;- Destination element: &apos;views&apos;&#x0D;&#x0A;- Original element: &apos;member_insert_view.jsp&apos;" description="Copy file" element1="src/main/webapp/WEB-INF/views/member_insert_view.jsp" files="1" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1735523396029" target="/spring-mvc-mybatis/src/main/webapp/WEB-INF/views" units="0" version="1.0"/>
+</session>

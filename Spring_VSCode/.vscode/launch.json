@@ -1,0 +1,94 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringThymeleafApplication<spring-thymeleaf>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.spring_thymeleaf.SpringThymeleafApplication",
+            "projectName": "spring-thymeleaf",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBoardApplication<spring-board>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.SpringBoardApplication",
+            "projectName": "spring-board",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringQuest1Application<spring-quest-1>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.SpringQuest1Application",
+            "projectName": "spring-quest-1",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringQuest2Application<spring-quest-2>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.SpringQuest2Application",
+            "projectName": "spring-quest-2",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBoardApiApplication<spring-board-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.SpringBoardApiApplication",
+            "projectName": "spring-board-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringApiApplication<spring-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kh.SpringApiApplication",
+            "projectName": "spring-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Quest1Application<Quest1>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.quest.Quest1Application",
+            "projectName": "Quest1",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Quest1Application<Quest1 (2)>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.quest.Quest1Application",
+            "projectName": "Quest1 (2)",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Quest2Application<Quest1>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.quest.Quest2Application",
+            "projectName": "Quest1",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
